@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Server</class>
+ <widget class="QWidget" name="Server">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>484</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="30,10">
+   <item>
+    <widget class="QTextEdit" name="log"/>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <layout class="QGridLayout" name="gridLayout">
+       <item row="0" column="0">
+        <widget class="QLabel" name="labelEmpty">
+         <property name="text">
+          <string/>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="QLabel" name="labelTeam1">
+         <property name="text">
+          <string>team 1</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QLabel" name="labelTeam2">
+         <property name="text">
+          <string>team 2</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="3">
+        <widget class="QLabel" name="labelNoTeam">
+         <property name="text">
+          <string>no team</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="player1">
+         <property name="text">
+          <string>no</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QRadioButton" name="p1t1">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>1</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>1</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p1Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QRadioButton" name="p1t2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>2</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>1</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p1Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <widget class="QRadioButton" name="p1t0">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="team" stdset="0">
+          <number>0</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>1</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p1Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="player2">
+         <property name="text">
+          <string>no</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="QRadioButton" name="p2t1">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>1</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>2</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p2Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QRadioButton" name="p2t2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>2</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>2</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p2Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="2" column="3">
+        <widget class="QRadioButton" name="p2t0">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="team" stdset="0">
+          <number>0</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>2</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p2Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="player3">
+         <property name="text">
+          <string>no</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="QRadioButton" name="p3t1">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>1</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>3</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p3Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="3" column="2">
+        <widget class="QRadioButton" name="p3t2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>2</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>3</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p3Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="3" column="3">
+        <widget class="QRadioButton" name="p3t0">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="team" stdset="0">
+          <number>0</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>3</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p3Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="player4">
+         <property name="text">
+          <string>no</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="QRadioButton" name="p4t1">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>1</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>4</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p4Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QRadioButton" name="p4t2">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="team" stdset="0">
+          <number>2</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>4</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p4Group</string>
+         </attribute>
+        </widget>
+       </item>
+       <item row="4" column="3">
+        <widget class="QRadioButton" name="p4t0">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="checked">
+          <bool>true</bool>
+         </property>
+         <property name="team" stdset="0">
+          <number>0</number>
+         </property>
+         <property name="player" stdset="0">
+          <number>4</number>
+         </property>
+         <attribute name="buttonGroup">
+          <string notr="true">p4Group</string>
+         </attribute>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QPushButton" name="start">
+         <property name="text">
+          <string>start</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+ <buttongroups>
+  <buttongroup name="p1Group"/>
+  <buttongroup name="p2Group"/>
+  <buttongroup name="p3Group"/>
+  <buttongroup name="p4Group"/>
+ </buttongroups>
+</ui>
