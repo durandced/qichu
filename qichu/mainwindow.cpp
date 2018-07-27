@@ -6,9 +6,20 @@ MainWindow::MainWindow(QWidget *parent) :
     ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->server.hide();
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+void MainWindow::on_create_clicked()
+{
+    this->server.show();
+}
+
+void MainWindow::on_join_clicked()
+{
+
 }
