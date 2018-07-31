@@ -9,6 +9,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "player.h"
+
 namespace Ui {
 class Server;
 }
@@ -35,13 +37,19 @@ private:
     int serverPort;
     QStringList players;
     bool addPlayer(QString name);
+    bool removePlayer(QString name);
     QTcpServer *tcpServer = NULL;
 
-    QMap<QString, QTcpSocket*> playerSockets;
+    QMap<QTcpSocket*, Player*> playerSockets;
 
     QMap<QString, int> teams;
     // int createGame(QStringList team1, QStringList team2);
     //
+
+private:
+    QJsonDocument handShake(QTcpSocket *socket, QJsonObject handShake);
+    QJsonDocument chat(QTcpSocket *socket, QJsonObject chat);
+
 
 private:
     Ui::Server *ui;

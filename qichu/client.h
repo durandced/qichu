@@ -5,6 +5,9 @@
 #include <QTcpSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QTimer>
+#include <QEventLoop>
+#include <QCloseEvent>
 
 namespace Ui {
 class Client;
@@ -35,8 +38,8 @@ private slots:
     void readyRead();
 
 private slots:
-    void on_playButton_clicked();
     void on_closeButton_clicked();
+    void on_sendButton_clicked();
 
 private:
     Ui::Client *ui;
