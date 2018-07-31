@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include "server.h"
+#include "client.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,7 +22,8 @@ private slots:
     void on_join_clicked();
 
 private:
-    Server server;
+    Server *server;
+    Client *client;
 
 private:
     Ui::MainWindow *ui;
