@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include <QTcpSocket>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace Ui {
 class Client;

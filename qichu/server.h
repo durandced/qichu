@@ -2,11 +2,12 @@
 #define SERVER_H
 
 #include <QDialog>
-#include <QObject>
 #include <QSpinBox>
 #include <QMap>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 namespace Ui {
 class Server;
@@ -17,7 +18,7 @@ class Server : public QDialog
     Q_OBJECT
 
 public:
-    explicit Server(QWidget *parent = 0, int port = 2000);
+    explicit Server(QWidget *parent = 0, int port = 2000, QString serverPass = "");
     ~Server();
 
 private slots:
@@ -30,6 +31,8 @@ private slots:
     void readyRead();
 
 private:
+    QString serverPassword;
+    int serverPort;
     QStringList players;
     bool addPlayer(QString name);
     QTcpServer *tcpServer = NULL;

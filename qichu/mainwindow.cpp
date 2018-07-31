@@ -19,7 +19,7 @@ MainWindow::~MainWindow()
 void MainWindow::on_create_clicked()
 {
     if (this->server == NULL)
-        this->server = new Server(this, ui->port->value());
+        this->server = new Server(this, ui->port->value(), ui->pass->text());
 //    this->hide();
     this->server->show(); //exec();
 //    this->show();
@@ -29,7 +29,7 @@ void MainWindow::on_create_clicked()
 
 void MainWindow::on_join_clicked()
 {
-    if (this->client == NULL)
+//    if (this->client == NULL)
     this->client = new Client(this, ui->ip->text(), ui->port->value(), ui->name->text(), ui->pass->text());
 //    this->hide();
     this->client->show(); //exec();

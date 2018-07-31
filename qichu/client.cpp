@@ -24,13 +24,18 @@ Client::~Client()
 
 void Client::connected()
 {
-    QString handShake;
-    handShake = QString("%1:%2\n").arg(this->playerName).arg(this->serverPassword);
-    this->socket->write(QByteArray(handShake.toStdString().c_str(), handShake.size()));
+    QJsonDocument handShake;
+    QJsonObject o;
+    o.insert("name", this->playerName);
+    if (!this->serverPassword.isEmpty())
+        o.insert("password", this->serverPassword);
+    handShake.setObject(o);
+    this->socket->write(handShake.toJson());
 }
 
 void Client::disconnected()
 {
+    ui->log->append("connection closed by server\n");
 
 }
 
