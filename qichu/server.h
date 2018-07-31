@@ -10,6 +10,7 @@
 #include <QJsonObject>
 
 #include "player.h"
+#include "core.h"
 
 namespace Ui {
 class Server;

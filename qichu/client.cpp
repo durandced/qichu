@@ -13,16 +13,20 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
     connect(this->socket, &QTcpSocket::readyRead,    this, &Client::readyRead);
     connect(this->socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
 
+    // TODO try to bind host to detect bad host names
     this->socket->connectToHost(host, port);
+    ui->sendButton->setFocus();
 
 }
 
 Client::~Client()
 {
-    if (this->socket->isOpen())
+    if (this->socket != NULL)
     {
-        this->socket->close();
+        if (this->socket->isOpen())
+            this->socket->close();
         delete this->socket;
+        this->socket = NULL;
     }
     delete ui;
 }
@@ -31,11 +35,15 @@ void Client::connected()
 {
     QJsonDocument handShake;
     QJsonObject o;
-    o.insert("command", "handshake");
-    o.insert("name", this->playerName);
+    o.insert(JSON_command, JSON_handshake);
+    o.insert(JSON_name, this->playerName);
     if (!this->serverPassword.isEmpty())
-        o.insert("password", this->serverPassword);
+        o.insert(JSON_password, this->serverPassword);
     handShake.setObject(o);
+#ifdef _DEBUG
+    ui->log->append("send:");
+    ui->log->append(handShake.toJson());
+#endif
     this->socket->write(handShake.toJson());
 }
 
@@ -61,7 +69,21 @@ void Client::bytesWritten(qint64 bytes)
 
 void Client::readyRead()
 {
-    ui->log->append(QString(this->socket->readAll()));
+    QJsonDocument input = QJsonDocument::fromJson(socket->readAll());
+#ifdef _DEBUG
+    ui->log->append("receive:");
+    ui->log->append(input.toJson());
+#endif
+    QJsonDocument output;
+    QJsonObject o = input.object();
+    if (o.value(JSON_command).toString() == JSON_chat)
+        this->chat(o);
+}
+
+void Client::chat(QJsonObject o)
+{
+    if (o.contains(JSON_text))
+    ui->log->append(o.value(JSON_text).toString());
 }
 
 void Client::on_closeButton_clicked()
@@ -75,9 +97,13 @@ void Client::on_sendButton_clicked()
         return;
     QJsonDocument chat;
     QJsonObject o;
-    o.insert("command", "chat");
-    o.insert("text", ui->chat->text());
+    o.insert(JSON_command, JSON_chat);
+    o.insert(JSON_text, ui->chat->text());
     ui->chat->setText("");
     chat.setObject(o);
+#ifdef _DEBUG
+    ui->log->append("send:");
+    ui->log->append(chat.toJson());
+#endif
     this->socket->write(chat.toJson());
 }

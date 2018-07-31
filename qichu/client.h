@@ -9,6 +9,9 @@
 #include <QEventLoop>
 #include <QCloseEvent>
 
+#include "player.h"
+#include "core.h"
+
 namespace Ui {
 class Client;
 }
@@ -30,6 +33,11 @@ private:
     int serverPort;
     QString playerName;
     QString serverPassword;
+
+private:
+    void chat(QJsonObject o);
+
+
 
 private slots:
     void connected();
