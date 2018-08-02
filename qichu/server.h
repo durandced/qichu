@@ -72,7 +72,7 @@ private:
     QJsonObject chatUpdate(QJsonObject chat);
     QJsonObject gameStart(QJsonObject o);
     QJsonObject playerTurn(QJsonObject o);
-    QJsonObject announced(QJsonObject o);
+    QJsonObject announced(QJsonObject announce);
     QJsonObject exchanged(QJsonObject o);
     QJsonObject cardPlayed(QJsonObject o);
     QJsonObject checked(QJsonObject o);

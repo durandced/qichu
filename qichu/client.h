@@ -42,18 +42,18 @@ private slots:
     void disconnected();
     void bytesWritten(qint64 bytes);
     void readyRead();
-    void on_closeButton_clicked();
 
 // ////////////////////////////////////////////
 // game members
 // ////////////////////////////////////////////
 private slots: // basics
     void on_sendChat_clicked();
+    void on_sendAnnounce_clicked();
 
 private: // player actions
     void sendHandshake();
     void sendChat();
-    void annonce();
+    void annonce(QString announce);
     void exchange();
     void playCards();
     void check();
@@ -63,7 +63,7 @@ private: // game server messages/responses
     void chatUpdate(QJsonObject o);
     void gameStart(QJsonObject o);
     void playerTurn(QJsonObject o);
-    void announced(QJsonObject o);
+    void announced(QJsonObject announce);
     void exchanged(QJsonObject o);
     void cardPlayed(QJsonObject o);
     void checked(QJsonObject o);

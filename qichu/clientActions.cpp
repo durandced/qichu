@@ -35,18 +35,28 @@ void Client::sendChat()
     ui->chat->setFocus();
 }
 
-void Client::annonce()
+void Client::annonce(QString announce)
 {
-    QJsonDocument annonce;
+    QJsonDocument output;
     QJsonObject o;
     o.insert(JSON_command, JSON_announce);
-    // some stuff
-    annonce.setObject(o);
+
+    if (announce == JSON_none)
+        o.insert(JSON_announce, announce);
+    else if (announce == JSON_tichu)
+        o.insert(JSON_announce, announce);
+    else if (announce == JSON_grand_tichu)
+        o.insert(JSON_announce, announce);
+    else if (announce == JSON_artichette)
+        o.insert(JSON_announce, announce);
+    else
+        return;
+    output.setObject(o);
 #ifdef _DEBUG
     ui->log->append("send:");
-    ui->log->append(annonce.toJson());
+    ui->log->append(output.toJson());
 #endif
-    this->socket->write(annonce.toJson());
+    this->socket->write(output.toJson());
 }
 
 void Client::exchange()

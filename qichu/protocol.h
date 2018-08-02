@@ -33,8 +33,10 @@
 // JSON_announce
 #define JSON_none           "none"
 #define JSON_tichu          "tichu"
-#define JSON_grand_tichu    "grand_tichu"
+#define JSON_grand_tichu    "grand tichu"
 #define JSON_artichette     "artichette"       // non fede
+#define JSON_announce_error "invalide announce"
+#define JSON_announce_fail  "rage announce"
 
 // JSON_exchange
 #define JSON_none           "none"
@@ -65,5 +67,6 @@
 #define JSON_wrong_name     "wrong name"
 #define JSON_wrong_password "wrong password"
 #define JSON_no_name        "no name"
+#define JSON_error_field    "field error"
 
 #endif // PROTOCOL_H

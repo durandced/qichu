@@ -6,8 +6,17 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
     ui(new Ui::Client)
 {
     ui->setupUi(this);
+
+    // setup ui chat
     connect(ui->chat, &QLineEdit::returnPressed, this, &Client::on_sendChat_clicked);
     ui->chat->setFocus();
+
+    // setup ui announce
+    ui->announceSelect->addItem(JSON_none);
+    ui->announceSelect->addItem(JSON_tichu);
+    ui->announceSelect->addItem(JSON_grand_tichu);
+    ui->announceSelect->addItem(JSON_artichette);
+
 
     this->socket = new QTcpSocket(this);
     connect(this->socket, &QTcpSocket::connected,    this, &Client::connected);
@@ -82,13 +91,17 @@ void Client::disconnected()
     ui->log->append("connection closed by server");
 }
 
-void Client::on_closeButton_clicked()
-{
-    this->close();
-}
+// /////////////////////////////
+// ui functions
+// /////////////////////////////
 
 void Client::on_sendChat_clicked()
 {
     this->sendChat();
 }
 
+
+void Client::on_sendAnnounce_clicked()
+{
+    this->annonce(ui->announceSelect->currentText());
+}

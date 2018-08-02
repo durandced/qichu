@@ -21,10 +21,17 @@ QJsonObject Server::playerTurn(QJsonObject o)
     return (o);
 }
 
-QJsonObject Server::announced(QJsonObject o)
+QJsonObject Server::announced(QJsonObject announce)
 {
-    this->broadCast(o);
-    return (o);
+    if (announce.contains(JSON_error))
+        return (announce);
+
+    bool isValide = false;
+    // isValide = Core::checkAnnounce(announce, player)
+    if (!isValide)
+        announce.insert(JSON_error, JSON_announce_error);
+    this->broadCast(announce);
+    return (announce);
 }
 
 QJsonObject Server::exchanged(QJsonObject o)

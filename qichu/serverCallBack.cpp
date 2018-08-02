@@ -79,7 +79,15 @@ QJsonObject Server::chat(QTcpSocket *socket, QJsonObject chat)
 
 QJsonObject Server::announce(QJsonObject announce, Player *player)
 {
-
+    if (!announce.contains(JSON_announce))
+        announce.insert(JSON_error, JSON_error_field);
+    else if ((announce.value(JSON_announce).toString() != JSON_none) &&
+             (announce.value(JSON_announce).toString() != JSON_tichu) &&
+             (announce.value(JSON_announce).toString() != JSON_grand_tichu) &&
+             (announce.value(JSON_announce).toString() != JSON_artichette))
+        announce.insert(JSON_error, JSON_error_field);
+    announce.insert(JSON_player, player->getName());
+    return this->announced(announce);
 }
 
 QJsonObject Server::exchange(QJsonObject announce, Player *player)
