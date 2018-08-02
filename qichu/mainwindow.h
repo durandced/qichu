@@ -24,8 +24,6 @@ private slots:
     void on_join_clicked();
 
 private:
-    Server *server;
-    Client *client;
 
 private:
     Ui::MainWindow *ui;
