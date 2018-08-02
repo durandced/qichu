@@ -10,19 +10,48 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     connect(ui->teamP1, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
     connect(ui->teamP2, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
     connect(ui->teamP3, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
+    ui->player0->setText("waiting...");
+    ui->player1->setText("waiting...");
+    ui->player2->setText("waiting...");
+    ui->player3->setText("waiting...");
 
     this->tcpServer = new QTcpServer(this);
-
     connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
 
+    // TODO check listen return
     this->tcpServer->listen(QHostAddress::Any, this->serverPort);
 
-    ui->start->setEnabled(false);
 
+    foreach (QNetworkInterface i, QNetworkInterface::allInterfaces())
+        if (i.humanReadableName().contains("local"))
+            if (i.addressEntries().size() >= 2)
+                ui->log->append("Game server available at " + i.addressEntries().at(1).ip().toString()
+                                + " port " + QString::number(this->serverPort));
+
+    ui->start->setEnabled(false);
+}
+
+
+void Server::closeEvent(QCloseEvent * e)
+{
+
+    QDialog::closeEvent(e);
 }
 
 Server::~Server()
 {
+    foreach (QTcpSocket *socket, this->playerSockets.keys())
+    {
+        if (socket->isOpen())
+        {
+            disconnect(socket, &QTcpSocket::disconnected, this, &Server::disconnected);
+            disconnect(socket, &QTcpSocket::readyRead,    this, &Server::readyRead);
+            disconnect(socket, &QTcpSocket::bytesWritten, this, &Server::bytesWritten);
+            socket->close();
+        }
+    }
+    disconnect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
+    this->tcpServer->close();
     delete ui;
 }
 
@@ -38,6 +67,7 @@ void Server::playerTeamSelect(int teamNum)
     int t1 = 0;
     int t2 = 0;
     if (this->teams.size() == 4)
+    {
         foreach (int t, this->teams)
         {
             if (t == 1)
@@ -45,13 +75,14 @@ void Server::playerTeamSelect(int teamNum)
             if (t == 2)
                 t2++;
         }
+    }
     if (t1 == 2 && t2 == 2)
         ui->start->setEnabled(true);
 }
 
 void Server::on_start_clicked()
 {
-    // demararge de la partie
+
 }
 
 void Server::newClient()
@@ -93,10 +124,10 @@ bool Server::removePlayer(QString name)
     else
         return false;
 
-    ui->player0->setText("no");
-    ui->player1->setText("no");
-    ui->player2->setText("no");
-    ui->player3->setText("no");
+    ui->player0->setText("waiting...");
+    ui->player1->setText("waiting...");
+    ui->player2->setText("waiting...");
+    ui->player3->setText("waiting...");
 
     foreach (QString player, this->players)
         this->addPlayer(player);
@@ -119,11 +150,12 @@ void Server::disconnected()
         ui->log->append(name);
 
         this->removePlayer(name);
-
         delete this->playerSockets[socket];
         this->playerSockets.remove(socket);
+
         if (socket->isOpen())
             socket->close();
+        delete socket;
     }
 }
 
@@ -144,8 +176,20 @@ void Server::readyRead()
     QJsonObject o = input.object();
     if (this->playerSockets.contains(socket))
     { // known player
+        Player *player = this->playerSockets[socket];
         if (o.value(JSON_command).toString() == JSON_chat)
             output = this->chat(socket, o);
+
+        else if (o.value(JSON_command).toString() == JSON_announce)
+            output = this->announce(o, player);
+        else if (o.value(JSON_command).toString() == JSON_exchange)
+            output = this->exchange(o, player);
+        else if (o.value(JSON_command).toString() == JSON_play_cards)
+            output = this->playCards(o, player);
+        else if (o.value(JSON_command).toString() == JSON_check)
+            output = this->check(o, player);
+        else
+            output = this->error(o, player);
     }
     else
     {
@@ -159,36 +203,15 @@ void Server::readyRead()
 
     socket->write(output.toJson());
 }
-QJsonDocument Server::chat(QTcpSocket *socket, QJsonObject chat)
-{
-    QJsonDocument output;
-    if (!chat.contains(JSON_text))
-    {
-        chat.insert(JSON_error, JSON_no_text);
-        output.setObject(chat);
-        return output;
-    }
-    QString text;
-    text = this->playerSockets[socket]->getName() + " : " + chat.value(JSON_text).toString();
-    ui->log->append(text);
-    chat.insert(JSON_text, text);
-    output.setObject(chat);
-    foreach (Player* p, this->playerSockets)
-    {
-        if (p->getSocket() != socket)
-        p->getSocket()->write(output.toJson());
-    }
-    return output;
-}
 
 QJsonDocument Server::handShake(QTcpSocket *socket, QJsonObject handShake)
 {
     QString name;
     QString pass = "";
-    if (handShake.contains(JSON_name))
+    if (handShake.contains(JSON_player))
     {
-        name = handShake.value(JSON_name).toString();
-        handShake.remove(JSON_name);
+        name = handShake.value(JSON_player).toString();
+        handShake.remove(JSON_player);
         if (this->serverPassword.isEmpty() == false)
         {
             if (handShake.contains(JSON_password))

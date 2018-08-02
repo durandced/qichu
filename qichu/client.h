@@ -10,7 +10,7 @@
 #include <QCloseEvent>
 
 #include "player.h"
-#include "core.h"
+#include "protocol.h"
 
 namespace Ui {
 class Client;
@@ -21,33 +21,51 @@ class Client : public QDialog
     Q_OBJECT
 
 public:
-    explicit Client(QWidget *parent = 0, QString host = "localhost", int port = 2000, QString name = "toto", QString serverPass = "");
+    explicit Client(QWidget *parent    = 0,
+                    QString host       = "localhost",
+                    int     port       = 2000,
+                    QString name       = "toto",
+                    QString serverPass = "");
     ~Client();
+
+// ////////////////////////////////////////////
+// client/server members
+// ////////////////////////////////////////////
 private:
-    QTcpSocket *socket;
-
-public:
-
-private:
-    QString serverHost;
-    int serverPort;
-    QString playerName;
-    QString serverPassword;
-
-private:
-    void chat(QJsonObject o);
-
-
-
+    QTcpSocket      *socket;
+    QString         playerName;
+    QString         serverHost;
+    int             serverPort;
+    QString         serverPassword;
 private slots:
-    void connected();
+    void connected(); // handshake
     void disconnected();
     void bytesWritten(qint64 bytes);
     void readyRead();
-
-private slots:
     void on_closeButton_clicked();
-    void on_sendButton_clicked();
+
+// ////////////////////////////////////////////
+// game members
+// ////////////////////////////////////////////
+private slots: // basics
+    void on_sendChat_clicked();
+
+private:
+    void chatUpdate(QJsonObject o);
+    void startTurn();
+    void annonce();
+    void exchange();
+    void playCards();
+    void check();
+
+private: // game server response
+    void playerTurn(QJsonObject o);
+    void announced(QJsonObject o);
+    void exchanged(QJsonObject o);
+    void cardPlayed(QJsonObject o);
+    void checked(QJsonObject o);
+    void turnFinished(QJsonObject o);
+    void error(QJsonObject o);
 
 private:
     Ui::Client *ui;

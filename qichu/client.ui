@@ -45,7 +45,7 @@
        <widget class="QLineEdit" name="chat"/>
       </item>
       <item>
-       <widget class="QPushButton" name="sendButton">
+       <widget class="QPushButton" name="sendChat">
         <property name="text">
          <string>send</string>
         </property>

@@ -6,6 +6,8 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
     ui(new Ui::Client)
 {
     ui->setupUi(this);
+    connect(ui->chat, &QLineEdit::returnPressed, this, &Client::on_sendChat_clicked);
+    ui->chat->setFocus();
 
     this->socket = new QTcpSocket(this);
     connect(this->socket, &QTcpSocket::connected,    this, &Client::connected);
@@ -15,8 +17,6 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
 
     // TODO try to bind host to detect bad host names
     this->socket->connectToHost(host, port);
-    ui->sendButton->setFocus();
-
 }
 
 Client::~Client()
@@ -24,9 +24,13 @@ Client::~Client()
     if (this->socket != NULL)
     {
         if (this->socket->isOpen())
+        {
+            disconnect(this->socket, &QTcpSocket::connected,    this, &Client::connected);
+            disconnect(this->socket, &QTcpSocket::disconnected, this, &Client::disconnected);
+            disconnect(this->socket, &QTcpSocket::readyRead,    this, &Client::readyRead);
+            disconnect(this->socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
             this->socket->close();
-        delete this->socket;
-        this->socket = NULL;
+        }
     }
     delete ui;
 }
@@ -36,7 +40,7 @@ void Client::connected()
     QJsonDocument handShake;
     QJsonObject o;
     o.insert(JSON_command, JSON_handshake);
-    o.insert(JSON_name, this->playerName);
+    o.insert(JSON_player, this->playerName);
     if (!this->serverPassword.isEmpty())
         o.insert(JSON_password, this->serverPassword);
     handShake.setObject(o);
@@ -50,16 +54,6 @@ void Client::connected()
 void Client::disconnected()
 {
     ui->log->append("connection closed by server");
-    QTimer wait;
-    QEventLoop loop;
-    wait.setInterval(2000);
-    wait.setSingleShot(true);
-    connect(&wait, &QTimer::timeout, this, &Client::hide);
-    connect(&wait, &QTimer::timeout, this, &Client::close);
-    connect(&wait, &QTimer::timeout, this, &Client::deleteLater);
-    connect(&wait, &QTimer::timeout, &loop, &QEventLoop::quit);
-    wait.start();
-    loop.exec();
 }
 
 void Client::bytesWritten(qint64 bytes)
@@ -74,16 +68,24 @@ void Client::readyRead()
     ui->log->append("receive:");
     ui->log->append(input.toJson());
 #endif
-    QJsonDocument output;
     QJsonObject o = input.object();
     if (o.value(JSON_command).toString() == JSON_chat)
-        this->chat(o);
-}
+        this->chatUpdate(o);
 
-void Client::chat(QJsonObject o)
-{
-    if (o.contains(JSON_text))
-    ui->log->append(o.value(JSON_text).toString());
+    else if (o.value(JSON_command).toString() == JSON_player_turn)
+        this->playerTurn(o);
+    else if (o.value(JSON_command).toString() == JSON_announce)
+        this->announced(o);
+    else if (o.value(JSON_command).toString() == JSON_exchange)
+        this->exchanged(o);
+    else if (o.value(JSON_command).toString() == JSON_play_cards)
+        this->cardPlayed(o);
+    else if (o.value(JSON_command).toString() == JSON_check)
+        this->checked(o);
+    else if (o.value(JSON_command).toString() == JSON_end_turn)
+        this->turnFinished(o);
+    else
+        this->error(o);
 }
 
 void Client::on_closeButton_clicked()
@@ -91,7 +93,13 @@ void Client::on_closeButton_clicked()
     this->close();
 }
 
-void Client::on_sendButton_clicked()
+void Client::chatUpdate(QJsonObject o)
+{
+    if (o.contains(JSON_text))
+        ui->log->append(o.value(JSON_text).toString());
+}
+
+void Client::on_sendChat_clicked()
 {
     if (ui->chat->text().isEmpty())
         return;
@@ -106,4 +114,6 @@ void Client::on_sendButton_clicked()
     ui->log->append(chat.toJson());
 #endif
     this->socket->write(chat.toJson());
+    ui->chat->setFocus();
 }
+
