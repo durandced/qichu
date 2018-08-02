@@ -9,7 +9,8 @@ int randomize_me_a_card(int max)
     return distr(eng);
 }
 
-Board::Board()
+Board::Board(Player *n, Player *e, Player *s, Player *w)
+    : north(n), east(e), south(s), west(w)
 {
     for (int i = two; i <= ace ; i++)
     {
@@ -46,16 +47,16 @@ Board::Board()
     for (int l = 0; l < MAX_CARDS; l+=4)
     {
         int r = randomize_me_a_card(discard.size() - 1);
-        south.hand.push_back(discard[r]);
+        south->hand.push_back(discard[r]);
         discard.erase(discard.begin()+r);
         r = randomize_me_a_card(discard.size() - 1);
-        east.hand.push_back(discard[r]);
+        east->hand.push_back(discard[r]);
         discard.erase(discard.begin()+r);
         r = randomize_me_a_card(discard.size() - 1);
-        north.hand.push_back(discard[r]);
+        north->hand.push_back(discard[r]);
         discard.erase(discard.begin()+r);
         r = randomize_me_a_card(discard.size() - 1);
-        west.hand.push_back(discard[r]);
+        west->hand.push_back(discard[r]);
         discard.erase(discard.begin()+r);
     }
 }
