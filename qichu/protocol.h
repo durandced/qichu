@@ -9,9 +9,9 @@
 #define JSON_handshake      "handshake"       // server  <->  client
 #define JSON_chat           "chat"            // server  <->  client
 #define JSON_game_start     "game_start"      // server   ->  client
-#define JSON_player_turn    "player_turn"     // server   ->  client
 #define JSON_announce       "announce"        // server  <->  client
 #define JSON_exchange       "exchange"        // server  <->  client
+#define JSON_player_turn    "player_turn"     // server   ->  client
 #define JSON_play_cards     "play_cards"      // server  <->  client
 #define JSON_check          "check"           // server  <->  client
 #define JSON_end_turn       "end_turn"        // server   ->  client
@@ -45,7 +45,7 @@
 #define JSON_give_friend    "give_friend"
 #define JSON_receive_right  "receive_right"
 #define JSON_receive_left   "receive_left"
-#define JSON_receive_friend "receive_friend"
+#define JSON_receive_front  "receive_front"
 
 // JSON_play_cards
 #define JSON_visible        "visible"

@@ -90,7 +90,7 @@ QJsonObject Server::announce(QJsonObject announce, Player *player)
     return this->announced(announce);
 }
 
-QJsonObject Server::exchange(QJsonObject announce, Player *player)
+QJsonObject Server::exchange(QJsonObject exchange, Player *player)
 {
 
 }
@@ -102,7 +102,8 @@ QJsonObject Server::playCards(QJsonObject cards, Player *player)
 
 QJsonObject Server::check(QJsonObject check, Player *player)
 {
-
+    check.insert(JSON_player, player->getName());
+    return this->checked(check);
 }
 
 QJsonObject Server::commandError(QJsonObject cmd, Player *player)

@@ -92,7 +92,6 @@ void Client::check()
     QJsonDocument check;
     QJsonObject o;
     o.insert(JSON_command, JSON_check);
-    // some stuff
     check.setObject(o);
 #ifdef _DEBUG
     ui->log->append("send:");

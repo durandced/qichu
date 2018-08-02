@@ -91,7 +91,19 @@ void Server::playerTeamSelect(int teamNum)
 
 void Server::on_start_clicked()
 {
+    Player *north = this->playerSockets[this->playerSockets.keys().at(0)];
+    Player *east = this->playerSockets[this->playerSockets.keys().at(1)];
+    Player *south = this->playerSockets[this->playerSockets.keys().at(2)];
+    Player *west = this->playerSockets[this->playerSockets.keys().at(3)];
 
+    Board *b;
+    b = new Board(north, east, south, west);
+
+    qDebug() << "Discard: " << b->discard.size() << "\n"
+             << "South: " << b->south->hand.size() << "\n"
+             << "East: " << b->east->hand.size() << "\n    "
+             << "North: " << b->north->hand.size() << "\n"
+             << "West: " << b->west->hand.size() << "\n";
 }
 
 void Server::newClient()

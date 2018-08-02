@@ -46,9 +46,13 @@ private slots:
 // ////////////////////////////////////////////
 // game members
 // ////////////////////////////////////////////
+private:
+
 private slots: // basics
     void on_sendChat_clicked();
     void on_sendAnnounce_clicked();
+
+    void on_sendCheck_clicked();
 
 private: // player actions
     void sendHandshake();
@@ -66,7 +70,7 @@ private: // game server messages/responses
     void announced(QJsonObject announce);
     void exchanged(QJsonObject o);
     void cardPlayed(QJsonObject o);
-    void checked(QJsonObject o);
+    void checked(QJsonObject check);
     void turnFinished(QJsonObject o);
     void endGame(QJsonObject o);
     void error(QJsonObject o);

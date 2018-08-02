@@ -46,10 +46,12 @@ QJsonObject Server::cardPlayed(QJsonObject o)
     return (o);
 }
 
-QJsonObject Server::checked(QJsonObject o)
+QJsonObject Server::checked(QJsonObject check)
 {
-    this->broadCast(o);
-    return (o);
+    bool isPlayerTurn = false;
+    // isPlayerTurn = Core::checkPlayerChecked(check, player)
+    this->broadCast(check);
+    return (check);
 }
 
 QJsonObject Server::turnFinished(QJsonObject o)

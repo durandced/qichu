@@ -14,13 +14,17 @@ void Client::chatUpdate(QJsonObject o)
 
 void Client::gameStart(QJsonObject o)
 {
+    // if hand.size == 9
+    //   start exchange ui
 
-
+    // if hand.size == 14
+    //   stop exchange ui
+    //   wait player turn
 }
 
 void Client::playerTurn(QJsonObject o)
 {
-
+    // ui.showPlayerTurn player
 
 }
 
@@ -51,10 +55,15 @@ void Client::cardPlayed(QJsonObject o)
 
 }
 
-void Client::checked(QJsonObject o)
+void Client::checked(QJsonObject check)
 {
-
-
+    QString player;
+    if (check.contains(JSON_player))
+        player = check.value(JSON_player).toString();
+    else
+        player = "error";
+    ui->log->append("player " + player + " check");
+    // ui show player check
 }
 
 void Client::turnFinished(QJsonObject o)

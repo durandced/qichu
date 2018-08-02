@@ -14,6 +14,7 @@
 
 #include "player.h"
 #include "protocol.h"
+#include "board.h"
 
 namespace Ui {
 class Server;
@@ -63,7 +64,7 @@ private:          // basic protocol commands
 
 private:          // game server commands
     QJsonObject announce(QJsonObject announce, Player *player);
-    QJsonObject exchange(QJsonObject announce, Player *player);
+    QJsonObject exchange(QJsonObject exchange, Player *player);
     QJsonObject playCards(QJsonObject cards, Player *player);
     QJsonObject check(QJsonObject check, Player *player);
     QJsonObject commandError(QJsonObject cmd, Player *player);
@@ -75,7 +76,7 @@ private:
     QJsonObject announced(QJsonObject announce);
     QJsonObject exchanged(QJsonObject o);
     QJsonObject cardPlayed(QJsonObject o);
-    QJsonObject checked(QJsonObject o);
+    QJsonObject checked(QJsonObject check);
     QJsonObject turnFinished(QJsonObject o);
     QJsonObject endGame(QJsonObject o);
     QJsonObject sendError(QJsonObject o);

@@ -100,8 +100,12 @@ void Client::on_sendChat_clicked()
     this->sendChat();
 }
 
-
 void Client::on_sendAnnounce_clicked()
 {
     this->annonce(ui->announceSelect->currentText());
+}
+
+void Client::on_sendCheck_clicked()
+{
+    this->check();
 }
