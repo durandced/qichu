@@ -36,6 +36,7 @@ SOURCES +=  main.cpp            \
             clientActions.cpp   \
             card.cpp            \
             player.cpp          \
+    board.cpp
 
 HEADERS  += mainwindow.h        \
             server.h            \
@@ -44,6 +45,7 @@ HEADERS  += mainwindow.h        \
             player.h            \
             core.h              \
             protocol.h          \
+    board.h
 
 FORMS    += mainwindow.ui       \
             server.ui           \

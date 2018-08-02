@@ -1,9 +1,6 @@
 #ifndef CARD_H
 #define CARD_H
 
-#include <vector>
-#include <random>
-
 #define ONE "Mahjong" // attrape-couillon
 #define TWO "two"
 #define THREE "three"
@@ -67,19 +64,7 @@ public:
     e_card  value;
     e_color color;
     e_state state;
-
-};
-
-class board
-{
-public:
-    board();
-    std::vector<Card> south;
-    std::vector<Card> east;
-    std::vector<Card> north;
-    std::vector<Card> west;
-    std::vector<Card> discard;
-    std::vector<Card> ingame;
+    int     points;
 };
 
 #endif // CARD_H
