@@ -50,21 +50,25 @@ private slots:
 private slots: // basics
     void on_sendChat_clicked();
 
-private:
-    void chatUpdate(QJsonObject o);
-    void startTurn();
+private: // player actions
+    void sendHandshake();
+    void sendChat();
     void annonce();
     void exchange();
     void playCards();
     void check();
 
-private: // game server response
+private: // game server messages/responses
+    void welcomed(QJsonObject o);
+    void chatUpdate(QJsonObject o);
+    void gameStart(QJsonObject o);
     void playerTurn(QJsonObject o);
     void announced(QJsonObject o);
     void exchanged(QJsonObject o);
     void cardPlayed(QJsonObject o);
     void checked(QJsonObject o);
     void turnFinished(QJsonObject o);
+    void endGame(QJsonObject o);
     void error(QJsonObject o);
 
 private:

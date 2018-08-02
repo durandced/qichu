@@ -50,6 +50,7 @@ private:          // players managment
     QMap<QString, int>         teams;
     bool addPlayer(QString name);
     bool removePlayer(QString name);
+    void broadCast(QJsonObject message);
 
 private slots:    // ui methodes
     void playerTeamSelect(int teamNum);
@@ -57,15 +58,27 @@ private slots:    // ui methodes
     void newClient();
 
 private:          // basic protocol commands
-    QJsonDocument handShake(QTcpSocket *socket, QJsonObject handShake);
-    QJsonDocument chat(QTcpSocket *socket, QJsonObject chat);
+    QJsonObject handShake(QTcpSocket *socket, QJsonObject handShake);
+    QJsonObject chat(QTcpSocket *socket, QJsonObject chat);
 
 private:          // game server commands
-    QJsonDocument announce(QJsonObject announce, Player *player);
-    QJsonDocument exchange(QJsonObject announce, Player *player);
-    QJsonDocument playCards(QJsonObject cards, Player *player);
-    QJsonDocument check(QJsonObject check, Player *player);
-    QJsonDocument error(QJsonObject cmd, Player *player);
+    QJsonObject announce(QJsonObject announce, Player *player);
+    QJsonObject exchange(QJsonObject announce, Player *player);
+    QJsonObject playCards(QJsonObject cards, Player *player);
+    QJsonObject check(QJsonObject check, Player *player);
+    QJsonObject commandError(QJsonObject cmd, Player *player);
+
+private:
+    QJsonObject chatUpdate(QJsonObject chat);
+    QJsonObject gameStart(QJsonObject o);
+    QJsonObject playerTurn(QJsonObject o);
+    QJsonObject announced(QJsonObject o);
+    QJsonObject exchanged(QJsonObject o);
+    QJsonObject cardPlayed(QJsonObject o);
+    QJsonObject checked(QJsonObject o);
+    QJsonObject turnFinished(QJsonObject o);
+    QJsonObject endGame(QJsonObject o);
+    QJsonObject sendError(QJsonObject o);
 
 protected:
     void closeEvent(QCloseEvent * e);

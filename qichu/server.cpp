@@ -55,6 +55,15 @@ Server::~Server()
     delete ui;
 }
 
+void Server::broadCast(QJsonObject message)
+{
+    QJsonDocument output;
+    output.setObject(message);
+
+    foreach (Player* p, this->playerSockets)
+            p->getSocket()->write(output.toJson());
+}
+
 void Server::playerTeamSelect(int teamNum)
 {
     QSpinBox *sel = (QSpinBox*)(QObject::sender());
@@ -172,83 +181,34 @@ void Server::readyRead()
     ui->log->append("receive:");
     ui->log->append(input.toJson());
 #endif
-    QJsonDocument output;
     QJsonObject o = input.object();
     if (this->playerSockets.contains(socket))
     { // known player
         Player *player = this->playerSockets[socket];
         if (o.value(JSON_command).toString() == JSON_chat)
-            output = this->chat(socket, o);
-
+            o = this->chat(socket, o);
         else if (o.value(JSON_command).toString() == JSON_announce)
-            output = this->announce(o, player);
+            o = this->announce(o, player);
         else if (o.value(JSON_command).toString() == JSON_exchange)
-            output = this->exchange(o, player);
+            o = this->exchange(o, player);
         else if (o.value(JSON_command).toString() == JSON_play_cards)
-            output = this->playCards(o, player);
+            o = this->playCards(o, player);
         else if (o.value(JSON_command).toString() == JSON_check)
-            output = this->check(o, player);
+            o = this->check(o, player);
         else
-            output = this->error(o, player);
+            o = this->commandError(o, player);
     }
     else
     {
         if (o.value(JSON_command).toString() == JSON_handshake)
-            output = this->handShake(socket, o);
+            o = this->handShake(socket, o);
+        else
+            o = this->commandError(o, NULL);
     }
 #ifdef _DEBUG
-    ui->log->append("send:");
+    QJsonDocument output;
+    output.setObject(o);
+    ui->log->append("callback output:");
     ui->log->append(output.toJson());
 #endif
-
-    socket->write(output.toJson());
-}
-
-QJsonDocument Server::handShake(QTcpSocket *socket, QJsonObject handShake)
-{
-    QString name;
-    QString pass = "";
-    if (handShake.contains(JSON_player))
-    {
-        name = handShake.value(JSON_player).toString();
-        handShake.remove(JSON_player);
-        if (this->serverPassword.isEmpty() == false)
-        {
-            if (handShake.contains(JSON_password))
-            {
-                pass = handShake.value(JSON_password).toString();
-                handShake.remove(JSON_password);
-            }
-        }
-        if (pass == this->serverPassword)
-        {
-            if (this->addPlayer(name))
-            {
-                this->playerSockets[socket] = new Player(this, name, socket);
-                handShake.insert(JSON_welcome, name);
-            }
-            else
-                handShake.insert(JSON_error, JSON_wrong_name);
-        }
-        else
-            handShake.insert(JSON_error, JSON_wrong_password);
-    }
-    else
-        handShake.insert(JSON_error, JSON_no_name);
-
-    if (this->players.size() >= 1)
-        handShake.insert("player0", this->players[0]);
-    if (this->players.size() >= 2)
-        handShake.insert("player1", this->players[1]);
-    if (this->players.size() >= 3)
-        handShake.insert("player2", this->players[2]);
-    if (this->players.size() >= 4)
-        handShake.insert("player3", this->players[3]);
-
-    QJsonDocument output;
-    output.setObject(handShake);
-    if (handShake.contains(JSON_error))
-        socket->close();
-
-    return output;
 }
