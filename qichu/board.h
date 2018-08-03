@@ -9,11 +9,11 @@
 class Board
 {
 public:
-    Board();
-    Player north;
-    Player east;
-    Player south;
-    Player west;
+    Board(Player *n, Player *e, Player *s, Player *w);
+    Player *north;
+    Player *east;
+    Player *south;
+    Player *west;
 
 
     std::vector<Card> ingame;

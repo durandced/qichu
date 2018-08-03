@@ -9,7 +9,8 @@ int randomize_me_a_card(int max)
     return distr(eng);
 }
 
-Board::Board()
+Board::Board(Player *n, Player *e, Player *s, Player *w)
+    : north(n), east(e), south(s), west(w)
 {
     for (int i = two; i <= ace ; i++)
     {

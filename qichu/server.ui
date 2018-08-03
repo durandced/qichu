@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Server</class>
- <widget class="QWidget" name="Server">
+ <widget class="QDialog" name="Server">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>484</width>
-    <height>300</height>
+    <width>711</width>
+    <height>241</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,92 +20,82 @@
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <layout class="QFormLayout" name="formLayout">
-       <item row="1" column="0">
-        <widget class="QLabel" name="player0">
-         <property name="text">
-          <string>no</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QSpinBox" name="teamP0">
-         <property name="maximum">
-          <number>2</number>
-         </property>
-         <property name="player" stdset="0">
-          <number>0</number>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QLabel" name="player1">
-         <property name="text">
-          <string>no</string>
-         </property>
-        </widget>
-       </item>
+      <layout class="QGridLayout" name="gridLayout">
        <item row="2" column="1">
-        <widget class="QSpinBox" name="teamP1">
-         <property name="maximum">
-          <number>2</number>
-         </property>
-         <property name="player" stdset="0">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="player2">
+        <widget class="QLabel" name="playerSouth">
          <property name="text">
-          <string>no</string>
+          <string>player 3</string>
          </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="QSpinBox" name="teamP2">
-         <property name="maximum">
-          <number>2</number>
-         </property>
-         <property name="player" stdset="0">
-          <number>2</number>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="0">
-        <widget class="QLabel" name="player3">
-         <property name="text">
-          <string>no</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="QSpinBox" name="teamP3">
-         <property name="maximum">
-          <number>2</number>
-         </property>
-         <property name="player" stdset="0">
-          <number>3</number>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>players</string>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
          </property>
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QLabel" name="label_2">
-         <property name="layoutDirection">
-          <enum>Qt::LeftToRight</enum>
-         </property>
+        <widget class="QLabel" name="playerNorth">
          <property name="text">
-          <string>team</string>
+          <string>player 1</string>
          </property>
          <property name="alignment">
-          <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="1">
+        <widget class="QLabel" name="labelEmpty">
+         <property name="text">
+          <string/>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="2">
+        <widget class="QLabel" name="playerEast">
+         <property name="text">
+          <string>player 4</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QLabel" name="playerWest">
+         <property name="text">
+          <string>player 2</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QPushButton" name="switchEN">
+         <property name="text">
+          <string>switch</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QPushButton" name="switchNW">
+         <property name="text">
+          <string>switch</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QPushButton" name="switchSE">
+         <property name="text">
+          <string>switch</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QPushButton" name="switchWS">
+         <property name="text">
+          <string>switch</string>
          </property>
         </widget>
        </item>

@@ -6,14 +6,16 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     ui(new Ui::Server)
 {
     ui->setupUi(this);
-    connect(ui->teamP0, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
-    connect(ui->teamP1, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
-    connect(ui->teamP2, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
-    connect(ui->teamP3, SIGNAL(valueChanged(int)), this, SLOT(playerTeamSelect(int)));
-    ui->player0->setText("waiting...");
-    ui->player1->setText("waiting...");
-    ui->player2->setText("waiting...");
-    ui->player3->setText("waiting...");
+    ui->playerNorth->setText("waiting...");
+    ui->playerEast->setText("waiting...");
+    ui->playerSouth->setText("waiting...");
+    ui->playerWest->setText("waiting...");
+
+    ui->switchSE->setEnabled(false);
+    ui->switchEN->setEnabled(false);
+    ui->switchNW->setEnabled(false);
+    ui->switchWS->setEnabled(false);
+    ui->start->setEnabled(false);
 
     this->tcpServer = new QTcpServer(this);
     connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
@@ -28,14 +30,13 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
                 ui->log->append("Game server available at " + i.addressEntries().at(1).ip().toString()
                                 + " port " + QString::number(this->serverPort));
 
-    ui->start->setEnabled(false);
 }
 
 
 void Server::closeEvent(QCloseEvent * e)
 {
-
-    QDialog::closeEvent(e);
+    emit closed();
+    QWidget::closeEvent(e);
 }
 
 Server::~Server()
@@ -64,34 +65,46 @@ void Server::broadCast(QJsonObject message)
             p->getSocket()->write(output.toJson());
 }
 
-void Server::playerTeamSelect(int teamNum)
-{
-    QSpinBox *sel = (QSpinBox*)(QObject::sender());
-    int playerNum = sel->property("player").toInt();
-    ui->start->setEnabled(false);
+//void Server::playerTeamSelect(int teamNum)
+//{
+//    QSpinBox *sel = (QSpinBox*)(QObject::sender());
+//    int playerNum = sel->property("player").toInt();
+//    ui->start->setEnabled(false);
 
-    if (playerNum < this->players.size())
-        this->teams[this->players.at(playerNum)] = teamNum;
+//    if (playerNum < this->players.size())
+//        this->teams[this->players.at(playerNum)] = teamNum;
 
-    int t1 = 0;
-    int t2 = 0;
-    if (this->teams.size() == 4)
-    {
-        foreach (int t, this->teams)
-        {
-            if (t == 1)
-                t1++;
-            if (t == 2)
-                t2++;
-        }
-    }
-    if (t1 == 2 && t2 == 2)
-        ui->start->setEnabled(true);
-}
+//    int t1 = 0;
+//    int t2 = 0;
+//    if (this->teams.size() == 4)
+//    {
+//        foreach (int t, this->teams)
+//        {
+//            if (t == 1)
+//                t1++;
+//            if (t == 2)
+//                t2++;
+//        }
+//    }
+//    if (t1 == 2 && t2 == 2)
+//        ui->start->setEnabled(true);
+//}
 
 void Server::on_start_clicked()
 {
+    Player *north = this->playerNorth;
+    Player *east = this->playerEast;
+    Player *south = this->playerSouth;
+    Player *west = this->playerWest;
 
+    Board *b;
+    b = new Board(north, east, south, west);
+
+    qDebug() << "Discard: " << b->discard.size()     << "\n"
+             << "South: "   << b->south->hand.size() << "\n"
+             << "East: "    << b->east->hand.size()  << "\n"
+             << "North: "   << b->north->hand.size() << "\n"
+             << "West: "    << b->west->hand.size()  << "\n";
 }
 
 void Server::newClient()
@@ -116,13 +129,24 @@ bool Server::addPlayer(QString name)
         this->players.append(name);
 
     if (this->players.size() >= 1)
-        ui->player0->setText(this->players[0]);
+        ui->playerNorth->setText(this->players[0]);
     if (this->players.size() >= 2)
-        ui->player1->setText(this->players[1]);
+        ui->playerEast->setText(this->players[1]);
     if (this->players.size() >= 3)
-        ui->player2->setText(this->players[2]);
+        ui->playerSouth->setText(this->players[2]);
     if (this->players.size() >= 4)
-        ui->player3->setText(this->players[3]);
+        ui->playerWest->setText(this->players[3]);
+
+    if (this->players.size() == 4)
+    {
+        ui->switchSE->setEnabled(true);
+        ui->switchEN->setEnabled(true);
+        ui->switchNW->setEnabled(true);
+        ui->switchWS->setEnabled(true);
+        ui->start->setEnabled(true);
+
+    }
+
     return ret;
 }
 
@@ -133,13 +157,19 @@ bool Server::removePlayer(QString name)
     else
         return false;
 
-    ui->player0->setText("waiting...");
-    ui->player1->setText("waiting...");
-    ui->player2->setText("waiting...");
-    ui->player3->setText("waiting...");
+    ui->playerNorth->setText("waiting...");
+    ui->playerEast->setText("waiting...");
+    ui->playerSouth->setText("waiting...");
+    ui->playerWest->setText("waiting...");
 
     foreach (QString player, this->players)
         this->addPlayer(player);
+
+    ui->switchSE->setEnabled(false);
+    ui->switchEN->setEnabled(false);
+    ui->switchNW->setEnabled(false);
+    ui->switchWS->setEnabled(false);
+    ui->start->setEnabled(false);
 
     return true;
 }
@@ -211,4 +241,64 @@ void Server::readyRead()
     ui->log->append("callback output:");
     ui->log->append(output.toJson());
 #endif
+}
+
+void Server::on_switchNW_clicked()
+{
+    QString w = ui->playerWest->text();
+    QString n = ui->playerNorth->text();
+
+    ui->playerWest->setText(n);
+    ui->playerNorth->setText(w);
+
+    Player* pw = this->playerWest;
+    Player* pn = this->playerNorth;
+
+    this->playerWest = pn;
+    this->playerNorth = pw;
+}
+
+void Server::on_switchEN_clicked()
+{
+    QString n = ui->playerNorth->text();
+    QString e = ui->playerEast->text();
+
+    ui->playerNorth->setText(e);
+    ui->playerEast->setText(n);
+
+    Player* pn = this->playerNorth;
+    Player* pe = this->playerEast;
+
+    this->playerEast = pn;
+    this->playerNorth = pe;
+}
+
+void Server::on_switchSE_clicked()
+{
+    QString e = ui->playerEast->text();
+    QString s = ui->playerSouth->text();
+
+    ui->playerEast->setText(s);
+    ui->playerSouth->setText(e);
+
+    Player* pe = playerEast;
+    Player* ps = playerSouth;
+
+    playerEast = ps;
+    playerSouth = pe;
+}
+
+void Server::on_switchWS_clicked()
+{
+    QString s = ui->playerSouth->text();
+    QString w = ui->playerWest->text();
+
+    ui->playerSouth->setText(w);
+    ui->playerWest->setText(s);
+
+    Player* ps = playerSouth;
+    Player* pw = playerWest;
+
+    playerSouth = pw;
+    playerWest = ps;
 }

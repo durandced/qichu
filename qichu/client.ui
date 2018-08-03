@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>Client</class>
- <widget class="QWidget" name="Client">
+ <widget class="QDialog" name="Client">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -41,6 +41,19 @@
      </layout>
     </item>
    </layout>
+  </widget>
+  <widget class="QPushButton" name="sendCheck">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>370</y>
+     <width>80</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>check!</string>
+   </property>
   </widget>
   <widget class="QWidget" name="">
    <property name="geometry">

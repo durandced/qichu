@@ -14,6 +14,7 @@
 
 #include "player.h"
 #include "protocol.h"
+#include "board.h"
 
 namespace Ui {
 class Server;
@@ -28,6 +29,8 @@ public:
                     int     port       = 2000,
                     QString serverPass = "");
     ~Server();
+signals:
+    void closed();
 
 // ////////////////////////////////////////////
 // client/server members
@@ -47,15 +50,22 @@ private:          // players managment
     QString                    serverPassword;
     QStringList                players;
     QMap<QTcpSocket*, Player*> playerSockets;
+    Player* playerNorth;
+    Player* playerEast;
+    Player* playerSouth;
+    Player* playerWest;
     QMap<QString, int>         teams;
     bool addPlayer(QString name);
     bool removePlayer(QString name);
     void broadCast(QJsonObject message);
 
 private slots:    // ui methodes
-    void playerTeamSelect(int teamNum);
     void on_start_clicked();
     void newClient();
+    void on_switchSE_clicked();
+    void on_switchEN_clicked();
+    void on_switchNW_clicked();
+    void on_switchWS_clicked();
 
 private:          // basic protocol commands
     QJsonObject handShake(QTcpSocket *socket, QJsonObject handShake);
@@ -63,7 +73,7 @@ private:          // basic protocol commands
 
 private:          // game server commands
     QJsonObject announce(QJsonObject announce, Player *player);
-    QJsonObject exchange(QJsonObject announce, Player *player);
+    QJsonObject exchange(QJsonObject exchange, Player *player);
     QJsonObject playCards(QJsonObject cards, Player *player);
     QJsonObject check(QJsonObject check, Player *player);
     QJsonObject commandError(QJsonObject cmd, Player *player);
@@ -75,7 +85,7 @@ private:
     QJsonObject announced(QJsonObject announce);
     QJsonObject exchanged(QJsonObject o);
     QJsonObject cardPlayed(QJsonObject o);
-    QJsonObject checked(QJsonObject o);
+    QJsonObject checked(QJsonObject check);
     QJsonObject turnFinished(QJsonObject o);
     QJsonObject endGame(QJsonObject o);
     QJsonObject sendError(QJsonObject o);
