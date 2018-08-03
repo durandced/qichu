@@ -60,11 +60,14 @@ enum e_state
 
 class Card
 {
+
 public:
+    bool operator<(const Card& other);
     e_card  value;
     e_color color;
     e_state state;
     int     points;
+    int     p_value;
 };
 
 #endif // CARD_H

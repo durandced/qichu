@@ -17,14 +17,16 @@ public:
     explicit Player(QWidget *parent, QString n, QTcpSocket *s);
     Player();
     ~Player();
+// Class Objects
     std::vector<Card> hand;
     std::vector<Card> upper_hand;
     std::vector<Card> won;
     Card left;
     Card right;
     Card front;
-
-public:
+// Class Methods
+    int count_points(); //count points in the won vector
+// Qt Stuff
     QTcpSocket *getSocket() {return this->socket;}
     QString getName() {return this->name;}
 private:

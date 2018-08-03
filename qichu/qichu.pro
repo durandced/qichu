@@ -36,7 +36,8 @@ SOURCES +=  main.cpp            \
             clientActions.cpp   \
             card.cpp            \
             player.cpp          \
-    board.cpp
+    board.cpp \
+    core.cpp
 
 HEADERS  += mainwindow.h        \
             server.h            \

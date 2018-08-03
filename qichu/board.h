@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include "player.h"
+#include "core.h"
 
 class Board
 {
@@ -14,7 +15,7 @@ public:
     Player south;
     Player west;
 
-    std::vector<Card> discard;
+
     std::vector<Card> ingame;
     std::vector<Card> last_hand;
 };

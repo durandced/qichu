@@ -25,7 +25,7 @@ Board::Board()
                 c.points = 10;
             else
                 c.points = 0;
-            discard.push_back(c);
+            ingame.push_back(c);
         };
     }
     for (int k = mahjong; k <= dragon; k++)
@@ -40,22 +40,22 @@ Board::Board()
             c.points = 25;
         else
             c.points = 0;
-        discard.push_back(c);
+        ingame.push_back(c);
     };
 
     for (int l = 0; l < MAX_CARDS; l+=4)
     {
-        int r = randomize_me_a_card(discard.size() - 1);
-        south.hand.push_back(discard[r]);
-        discard.erase(discard.begin()+r);
-        r = randomize_me_a_card(discard.size() - 1);
-        east.hand.push_back(discard[r]);
-        discard.erase(discard.begin()+r);
-        r = randomize_me_a_card(discard.size() - 1);
-        north.hand.push_back(discard[r]);
-        discard.erase(discard.begin()+r);
-        r = randomize_me_a_card(discard.size() - 1);
-        west.hand.push_back(discard[r]);
-        discard.erase(discard.begin()+r);
+        int r = randomize_me_a_card(ingame.size() - 1);
+        south.hand.push_back(ingame[r]);
+        ingame.erase(ingame.begin()+r);
+        r = randomize_me_a_card(ingame.size() - 1);
+        east.hand.push_back(ingame[r]);
+        ingame.erase(ingame.begin()+r);
+        r = randomize_me_a_card(ingame.size() - 1);
+        north.hand.push_back(ingame[r]);
+        ingame.erase(ingame.begin()+r);
+        r = randomize_me_a_card(ingame.size() - 1);
+        west.hand.push_back(ingame[r]);
+        ingame.erase(ingame.begin()+r);
     }
 }
