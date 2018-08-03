@@ -27,6 +27,10 @@ public:
                     QString name       = "toto",
                     QString serverPass = "");
     ~Client();
+signals:
+    void closed();
+protected:
+    void closeEvent(QCloseEvent * e);
 
 // ////////////////////////////////////////////
 // client/server members

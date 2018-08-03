@@ -29,6 +29,8 @@ public:
                     int     port       = 2000,
                     QString serverPass = "");
     ~Server();
+signals:
+    void closed();
 
 // ////////////////////////////////////////////
 // client/server members
@@ -48,15 +50,22 @@ private:          // players managment
     QString                    serverPassword;
     QStringList                players;
     QMap<QTcpSocket*, Player*> playerSockets;
+    Player* playerNorth;
+    Player* playerEast;
+    Player* playerSouth;
+    Player* playerWest;
     QMap<QString, int>         teams;
     bool addPlayer(QString name);
     bool removePlayer(QString name);
     void broadCast(QJsonObject message);
 
 private slots:    // ui methodes
-    void playerTeamSelect(int teamNum);
     void on_start_clicked();
     void newClient();
+    void on_switchSE_clicked();
+    void on_switchEN_clicked();
+    void on_switchNW_clicked();
+    void on_switchWS_clicked();
 
 private:          // basic protocol commands
     QJsonObject handShake(QTcpSocket *socket, QJsonObject handShake);

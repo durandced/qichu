@@ -6,7 +6,7 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
     ui(new Ui::Client)
 {
     ui->setupUi(this);
-
+    this->setWindowTitle("qichu : " + name);
     // setup ui chat
     connect(ui->chat, &QLineEdit::returnPressed, this, &Client::on_sendChat_clicked);
     ui->chat->setFocus();
@@ -42,6 +42,12 @@ Client::~Client()
         }
     }
     delete ui;
+}
+
+void Client::closeEvent(QCloseEvent * e)
+{
+    emit closed();
+    QWidget::closeEvent(e);
 }
 
 void Client::readyRead()
