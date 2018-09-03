@@ -48,14 +48,14 @@ private:
 // ////////////////////////////////////////////
 private:          // players managment
     QString                    serverPassword;
-    QStringList                players;
+    QMap<QString, QTcpSocket*> players;
     QMap<QTcpSocket*, Player*> playerSockets;
     Player* playerNorth;
     Player* playerEast;
     Player* playerSouth;
     Player* playerWest;
     QMap<QString, int>         teams;
-    bool addPlayer(QString name);
+    bool addPlayer(QString name, QTcpSocket *socket);
     bool removePlayer(QString name);
     void broadCast(QJsonObject message);
 

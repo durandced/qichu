@@ -23,7 +23,7 @@ void MainWindow::on_create_clicked()
 
     Server server(this, ui->port->value(), ui->pass->text());
     //    this->hide();
-    server.setModal(true); //exec();
+//    server.setModal(true); //exec();
     server.show();
     ui->ip->setText("localhost");
     this->on_join_clicked();
@@ -34,9 +34,19 @@ void MainWindow::on_create_clicked()
 
 void MainWindow::on_join_clicked()
 {
+    QEventLoop loop;
     Client client(this, ui->ip->text(), ui->port->value(), ui->name->text(), ui->pass->text());
-    this->hide();
-    client.exec();
-    this->show();
+    Client bob(this, ui->ip->text(), ui->port->value(), "bob", ui->pass->text());
+    Client timy(this, ui->ip->text(), ui->port->value(), "timy", ui->pass->text());
+    Client rob(this, ui->ip->text(), ui->port->value(), "rob", ui->pass->text());
+
+    connect(&client, &Client::closed, &loop, &QEventLoop::quit);
+//    this->hide();
+    client.show();
+    bob.show();
+    timy.show();
+    rob.show();
+    loop.exec();
+//    this->show();
 
 }

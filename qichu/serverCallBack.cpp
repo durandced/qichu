@@ -22,9 +22,8 @@ QJsonObject Server::handShake(QTcpSocket *socket, QJsonObject handShake)
         }
         if (pass == this->serverPassword)
         {
-            if (this->addPlayer(name))
+            if (this->addPlayer(name, socket))
             {
-                this->playerSockets[socket] = new Player(this, name, socket);
                 handShake.insert(JSON_welcome, name);
             }
             else
@@ -37,13 +36,13 @@ QJsonObject Server::handShake(QTcpSocket *socket, QJsonObject handShake)
         handShake.insert(JSON_error, JSON_no_name);
 
     if (this->players.size() >= 1)
-        handShake.insert("player_north", this->players[0]);
+        handShake.insert("player_north", this->players.keys()[0]);
     if (this->players.size() >= 2)
-        handShake.insert("player_east", this->players[1]);
+        handShake.insert("player_east", this->players.keys()[1]);
     if (this->players.size() >= 3)
-        handShake.insert("player_south", this->players[2]);
+        handShake.insert("player_south", this->players.keys()[2]);
     if (this->players.size() >= 4)
-        handShake.insert("player_west", this->players[3]);
+        handShake.insert("player_west", this->players.keys()[3]);
 
     if (handShake.contains(JSON_error))
     {
