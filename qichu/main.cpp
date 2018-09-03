@@ -332,33 +332,33 @@ int test_combis()
     ret = test_fake_house();
 }
 
-int test()
-{
-    Board b;
-    qDebug() << "Discard: " << b.ingame.size() << "\n"
-             << "South: " << b.south.hand.size() << "\n"
-             << "East: " << b.east.hand.size() << "\n    "
-             << "North: " << b.north.hand.size() << "\n"
-             << "West: " << b.west.hand.size() << "\n";
-    std::sort(b.east.hand.begin(), b.east.hand.end());
-    qDebug() << "Player East:";
-    print_vector(b.east.hand);
-    qDebug() << "Player West:";
-    print_vector(b.west.hand);
-    qDebug() << "Player South:";
-    print_vector(b.south.hand);
-    qDebug() << "Player North:";
-    print_vector(b.north.hand);
-    b.east.won = b.east.hand;
-    b.west.won = b.west.hand;
-    b.south.won = b.south.hand;
-    b.north.won = b.north.hand;
-    qDebug() << "points east: " << b.east.count_points();
-    qDebug() << "points west: " << b.west.count_points();
-    qDebug() << "points north: " << b.north.count_points();
-    qDebug() << "points south: " << b.south.count_points();
+//int test()
+//{
+//    Board b;
+//    qDebug() << "Discard: " << b.ingame.size() << "\n"
+//             << "South: " << b.south.hand.size() << "\n"
+//             << "East: " << b.east.hand.size() << "\n    "
+//             << "North: " << b.north.hand.size() << "\n"
+//             << "West: " << b.west.hand.size() << "\n";
+//    std::sort(b.east.hand.begin(), b.east.hand.end());
+//    qDebug() << "Player East:";
+//    print_vector(b.east.hand);
+//    qDebug() << "Player West:";
+//    print_vector(b.west.hand);
+//    qDebug() << "Player South:";
+//    print_vector(b.south.hand);
+//    qDebug() << "Player North:";
+//    print_vector(b.north.hand);
+//    b.east.won = b.east.hand;
+//    b.west.won = b.west.hand;
+//    b.south.won = b.south.hand;
+//    b.north.won = b.north.hand;
+//    qDebug() << "points east: " << b.east.count_points();
+//    qDebug() << "points west: " << b.west.count_points();
+//    qDebug() << "points north: " << b.north.count_points();
+//    qDebug() << "points south: " << b.south.count_points();
 
-}
+//}
 
 int main(int argc, char *argv[])
 {
@@ -366,6 +366,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    test_combis();
+//    test_combis();
     return a.exec();
 }
