@@ -90,6 +90,11 @@ private:
     QJsonObject endGame(QJsonObject o);
     QJsonObject sendError(QJsonObject o);
 
+// ////////////////////////////////////////////
+// board members
+// ////////////////////////////////////////////
+    Board *board;
+
 protected:
     void closeEvent(QCloseEvent * e);
 

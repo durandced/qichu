@@ -16,7 +16,7 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     ui->switchNW->setEnabled(false);
     ui->switchWS->setEnabled(false);
     ui->start->setEnabled(false);
-
+    this->board = NULL;
     this->tcpServer = new QTcpServer(this);
     connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
 
@@ -97,15 +97,14 @@ void Server::on_start_clicked()
     Player *south = this->playerSouth;
     Player *west = this->playerWest;
 
-    Board *b;
-    b = new Board(north, east, south, west);
+    this->board = new Board(north, east, south, west);
 
     qDebug()
             //<< "Discard: " << b->discard.size()     << "\n"
-             << "South: "   << b->south->hand.size() << "\n"
-             << "East: "    << b->east->hand.size()  << "\n"
-             << "North: "   << b->north->hand.size() << "\n"
-             << "West: "    << b->west->hand.size()  << "\n";
+             << "South: "   << board->south->hand.size() << "\n"
+             << "East: "    << board->east->hand.size()  << "\n"
+             << "North: "   << board->north->hand.size() << "\n"
+             << "West: "    << board->west->hand.size()  << "\n";
 }
 
 void Server::newClient()
