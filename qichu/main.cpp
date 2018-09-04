@@ -363,7 +363,7 @@ void test()
     qDebug() << "points north: " << b->north->count_points();
     qDebug() << "points south: " << b->south->count_points();
 
-}
+//}
 
 int main(int argc, char *argv[])
 {
@@ -371,6 +371,6 @@ int main(int argc, char *argv[])
     MainWindow w;
     w.show();
 
-    test_combis();
+//    test_combis();
     return a.exec();
 }

@@ -16,7 +16,7 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     ui->switchNW->setEnabled(false);
     ui->switchWS->setEnabled(false);
     ui->start->setEnabled(false);
-
+    this->board = NULL;
     this->tcpServer = new QTcpServer(this);
     connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
 
@@ -97,14 +97,14 @@ void Server::on_start_clicked()
     Player *south = this->playerSouth;
     Player *west = this->playerWest;
 
-    Board *b;
-    b = new Board(north, east, south, west);
+    this->board = new Board(north, east, south, west);
 
-    qDebug() << "Discard: " << b->discard.size()     << "\n"
-             << "South: "   << b->south->hand.size() << "\n"
-             << "East: "    << b->east->hand.size()  << "\n"
-             << "North: "   << b->north->hand.size() << "\n"
-             << "West: "    << b->west->hand.size()  << "\n";
+    qDebug()
+            //<< "Discard: " << b->discard.size()     << "\n"
+             << "South: "   << board->south->hand.size() << "\n"
+             << "East: "    << board->east->hand.size()  << "\n"
+             << "North: "   << board->north->hand.size() << "\n"
+             << "West: "    << board->west->hand.size()  << "\n";
 }
 
 void Server::newClient()
@@ -116,28 +116,47 @@ void Server::newClient()
     connect(socket, &QTcpSocket::bytesWritten, this, &Server::bytesWritten);
 }
 
-bool Server::addPlayer(QString name)
+bool Server::addPlayer(QString name, QTcpSocket* socket)
 {
     bool ret = false;
     if (this->players.size() >= 4)
         return ret;
 
     ret = true;
-    if (this->players.contains(name))
+    if (this->players.keys().contains(name))
         ret = false;
     else
-        this->players.append(name);
+    {
+        this->playerSockets[socket] = new Player(this, name, socket);
+        this->players[name] = socket;
+    }
 
-    if (this->players.size() >= 1)
-        ui->playerNorth->setText(this->players[0]);
-    if (this->players.size() >= 2)
-        ui->playerEast->setText(this->players[1]);
-    if (this->players.size() >= 3)
-        ui->playerSouth->setText(this->players[2]);
-    if (this->players.size() >= 4)
-        ui->playerWest->setText(this->players[3]);
+    this->playerNorth = NULL;
+    this->playerEast = NULL;
+    this->playerSouth = NULL;
+    this->playerWest = NULL;
+    if (this->players.keys().size() >= 1)
+    {
+        ui->playerNorth->setText(this->players.keys()[0]);
+        this->playerNorth = this->playerSockets[this->players[this->players.keys()[0]]];
+    }
+    if (this->players.keys().size() >= 2)
+    {
+        ui->playerEast->setText(this->players.keys()[1]);
+        this->playerEast = this->playerSockets[this->players[this->players.keys()[1]]];
+    }
+    if (this->players.keys().size() >= 3)
+    {
+        ui->playerSouth->setText(this->players.keys()[2]);
+        this->playerSouth = this->playerSockets[this->players[this->players.keys()[2]]];
+    }
+    if (this->players.keys().size() >= 4)
+    {
+        ui->playerWest->setText(this->players.keys()[3]);
+        this->playerWest = this->playerSockets[this->players[this->players.keys()[3]]];
+    }
 
-    if (this->players.size() == 4)
+    if (this->players.keys().size() == 4)
     {
         ui->switchSE->setEnabled(true);
         ui->switchEN->setEnabled(true);
@@ -153,7 +172,7 @@ bool Server::addPlayer(QString name)
 bool Server::removePlayer(QString name)
 {
     if (this->players.contains(name))
-        this->players.removeAt(this->players.indexOf(name));
+        this->players.remove(name);
     else
         return false;
 
@@ -162,8 +181,8 @@ bool Server::removePlayer(QString name)
     ui->playerSouth->setText("waiting...");
     ui->playerWest->setText("waiting...");
 
-    foreach (QString player, this->players)
-        this->addPlayer(player);
+    foreach (QString player, this->players.keys())
+        this->addPlayer(player, this->players[player]);
 
     ui->switchSE->setEnabled(false);
     ui->switchEN->setEnabled(false);
