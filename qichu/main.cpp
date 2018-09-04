@@ -362,8 +362,7 @@ void test()
     qDebug() << "points west: " << b->west->count_points();
     qDebug() << "points north: " << b->north->count_points();
     qDebug() << "points south: " << b->south->count_points();
-
-//}
+}
 
 int main(int argc, char *argv[])
 {
