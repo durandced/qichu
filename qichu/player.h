@@ -15,6 +15,7 @@ class Player : public QWidget
 
 public:
     explicit Player(QWidget *parent, QString n, QTcpSocket *s);
+    Player(); //FIXME: Remove that shit
     ~Player();
 // Class Objects
     std::vector<Card> hand;

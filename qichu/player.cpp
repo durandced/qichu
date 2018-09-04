@@ -9,10 +9,12 @@ Player::Player(QWidget *parent, QString n, QTcpSocket *s) :
 {
     ui->setupUi(this);
 }
+
 Player::Player()
 {
- //FIXME: Remove that shit
+
 }
+
 Player::~Player()
 {
     delete ui;

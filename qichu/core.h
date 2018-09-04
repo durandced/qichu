@@ -47,5 +47,6 @@ struct s_combi {
 };
 
 s_combi is_vector_combi(std::vector<Card> c);
+bool verify_and_deal_exchange();
 
 #endif // CORE_H

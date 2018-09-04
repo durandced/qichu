@@ -18,6 +18,7 @@ public:
 
     std::vector<Card> ingame;
     std::vector<Card> last_hand;
+    std::vector<Card> discard;
 };
 
 #endif // BOARD_H

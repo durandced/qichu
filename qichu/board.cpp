@@ -47,16 +47,16 @@ Board::Board(Player *n, Player *e, Player *s, Player *w)
     for (int l = 0; l < MAX_CARDS; l+=4)
     {
         int r = randomize_me_a_card(ingame.size() - 1);
-        south.hand.push_back(ingame[r]);
+        south->hand.push_back(ingame[r]);
         ingame.erase(ingame.begin()+r);
         r = randomize_me_a_card(ingame.size() - 1);
-        east.hand.push_back(ingame[r]);
+        east->hand.push_back(ingame[r]);
         ingame.erase(ingame.begin()+r);
         r = randomize_me_a_card(ingame.size() - 1);
-        north.hand.push_back(ingame[r]);
+        north->hand.push_back(ingame[r]);
         ingame.erase(ingame.begin()+r);
         r = randomize_me_a_card(ingame.size() - 1);
-        west.hand.push_back(ingame[r]);
+        west->hand.push_back(ingame[r]);
         ingame.erase(ingame.begin()+r);
     }
 }

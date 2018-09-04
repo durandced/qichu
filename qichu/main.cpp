@@ -17,7 +17,7 @@ void pretty_print_card(Card c)
 
 }
 
-int print_vector(std::vector<Card> v)
+void print_vector(std::vector<Card> v)
 {
     for (auto &c : v)
         pretty_print_card(c);
@@ -310,7 +310,7 @@ s_combi test_legit_pair_phoenix()
     return ret;
 }
 
-int test_combis()
+void test_combis()
 {
     s_combi ret;
     ret.value = none;
@@ -332,31 +332,36 @@ int test_combis()
     ret = test_fake_house();
 }
 
-int test()
+void test()
 {
-    Board b;
-    qDebug() << "Discard: " << b.ingame.size() << "\n"
-             << "South: " << b.south.hand.size() << "\n"
-             << "East: " << b.east.hand.size() << "\n    "
-             << "North: " << b.north.hand.size() << "\n"
-             << "West: " << b.west.hand.size() << "\n";
-    std::sort(b.east.hand.begin(), b.east.hand.end());
+    Player *north = new Player();
+    Player *east = new Player();
+    Player *south = new Player();
+    Player *west = new Player();
+
+    Board *b = new Board(north, east, south, west);
+    qDebug() << "Discard: " << b->ingame.size() << "\n"
+             << "South: " << b->south->hand.size() << "\n"
+             << "East: " << b->east->hand.size() << "\n    "
+             << "North: " << b->north->hand.size() << "\n"
+             << "West: " << b->west->hand.size() << "\n";
+    std::sort(b->east->hand.begin(), b->east->hand.end());
     qDebug() << "Player East:";
-    print_vector(b.east.hand);
+    print_vector(b->east->hand);
     qDebug() << "Player West:";
-    print_vector(b.west.hand);
+    print_vector(b->west->hand);
     qDebug() << "Player South:";
-    print_vector(b.south.hand);
+    print_vector(b->south->hand);
     qDebug() << "Player North:";
-    print_vector(b.north.hand);
-    b.east.won = b.east.hand;
-    b.west.won = b.west.hand;
-    b.south.won = b.south.hand;
-    b.north.won = b.north.hand;
-    qDebug() << "points east: " << b.east.count_points();
-    qDebug() << "points west: " << b.west.count_points();
-    qDebug() << "points north: " << b.north.count_points();
-    qDebug() << "points south: " << b.south.count_points();
+    print_vector(b->north->hand);
+    b->east->won = b->east->hand;
+    b->west->won = b->west->hand;
+    b->south->won = b->south->hand;
+    b->north->won = b->north->hand;
+    qDebug() << "points east: " << b->east->count_points();
+    qDebug() << "points west: " << b->west->count_points();
+    qDebug() << "points north: " << b->north->count_points();
+    qDebug() << "points south: " << b->south->count_points();
 
 }
 
