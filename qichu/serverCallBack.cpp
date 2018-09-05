@@ -35,26 +35,18 @@ QJsonObject Server::handShake(QTcpSocket *socket, QJsonObject handShake)
     else
         handShake.insert(JSON_error, JSON_no_name);
 
-    if (this->players.size() >= 1)
-        handShake.insert("player_north", this->players.keys()[0]);
-    if (this->players.size() >= 2)
-        handShake.insert("player_east", this->players.keys()[1]);
-    if (this->players.size() >= 3)
-        handShake.insert("player_south", this->players.keys()[2]);
-    if (this->players.size() >= 4)
-        handShake.insert("player_west", this->players.keys()[3]);
-
     if (handShake.contains(JSON_error))
     {
         socket->close();
         return handShake;
     }
 
-    this->broadCast(handShake);
-
-#ifdef _DEBUG
     QJsonDocument output;
     output.setObject(handShake);
+//    this->broadCast(handShake);
+    socket->write(output.toJson());
+    this->updateHandshake();
+#ifdef _DEBUG
     ui->log->append("send:");
     ui->log->append(output.toJson());
 #endif
