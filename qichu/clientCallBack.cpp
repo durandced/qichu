@@ -3,6 +3,8 @@
 
 void Client::welcomed(QJsonObject o)
 {
+    if (o.contains(JSON_handshake))
+        ui->log->append(o.value(JSON_text).toString());
 
 }
 
@@ -14,7 +16,7 @@ void Client::chatUpdate(QJsonObject o)
 
 void Client::gameStart(QJsonObject o)
 {
-    // if hand.size == 9
+    // if hand.size == 8
     //   start exchange ui
 
     // if hand.size == 14

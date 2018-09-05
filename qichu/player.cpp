@@ -6,6 +6,9 @@ Player::Player(QWidget *parent, QString n, QTcpSocket *s) :
     ui(new Ui::Player)
 {
     ui->setupUi(this);
+    this->announceName = "";
+    this->lead = false;
+    this->announce = e_announce::unknown;
 }
 
 Player::Player()

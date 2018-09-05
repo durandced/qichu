@@ -4,7 +4,20 @@
 #include <vector>
 #include "card.h"
 
+enum e_turn {
+    north = 0,
+    west,
+    south,
+    east
+};
 
+enum e_announce {
+    unknown = 0,
+    no,
+    tichu,
+    grandTichu,
+    artichette,
+};
 
 enum e_combi {
     none = 0,

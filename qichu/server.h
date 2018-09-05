@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QJsonArray>
 #include <QNetworkInterface>
 #include <QNetworkAddressEntry>
 #include <QNetworkAddressEntry>
@@ -50,6 +51,8 @@ private:          // players managment
     QString                    serverPassword;
     QMap<QString, QTcpSocket*> players;
     QMap<QTcpSocket*, Player*> playerSockets;
+
+    Board *board;
     Player* playerNorth;
     Player* playerEast;
     Player* playerSouth;
@@ -79,6 +82,7 @@ private:          // game server commands
     QJsonObject commandError(QJsonObject cmd, Player *player);
 
 private:
+    void updateHandshake();
     QJsonObject chatUpdate(QJsonObject chat);
     QJsonObject gameStart(QJsonObject o);
     QJsonObject playerTurn(QJsonObject o);
@@ -89,11 +93,6 @@ private:
     QJsonObject turnFinished(QJsonObject o);
     QJsonObject endGame(QJsonObject o);
     QJsonObject sendError(QJsonObject o);
-
-// ////////////////////////////////////////////
-// board members
-// ////////////////////////////////////////////
-    Board *board;
 
 protected:
     void closeEvent(QCloseEvent * e);

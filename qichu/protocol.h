@@ -21,6 +21,10 @@
 // JSON_handshake
 #define JSON_password       "password"
 #define JSON_welcome        "welcome"
+#define JSON_p_north        "player_north"
+#define JSON_p_east         "player_east"
+#define JSON_p_south        "player_south"
+#define JSON_p_west         "player_west"
 
 // JSON_chat
 #define JSON_text           "text"
@@ -31,6 +35,7 @@
 // JSON_player_turn
 
 // JSON_announce
+#define JSON_unknown        "unknown"
 #define JSON_none           "none"
 #define JSON_tichu          "tichu"
 #define JSON_grand_tichu    "grand tichu"
@@ -54,13 +59,18 @@
 // JSON_check
 
 // JSON_end_turn
+
+// blind board status
 #define JSON_boars_status   "boars_status"
-#define JSON_in_game        "in_game"
-#define JSON_won            "won"
+#define JSON_deal_size      "deal_size"
+#define JSON_discard        "discard"
 #define JSON_last_played    "last_played"
+#define JSON_won            "won" // per player
+#define JSON_hand           "hand" // per player
+#define JSON_lead           "lead" // per player
+// visible by player
 // TBD
 
-// JSON_end_game
 
 // JSON_error
 #define JSON_no_text        "no text"

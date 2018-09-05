@@ -99,12 +99,21 @@ void Server::on_start_clicked()
 
     this->board = new Board(north, east, south, west);
 
+    // deal 8 cards and wait players announces
+    this->board->dealCards(this->playerSockets.values(), START_DEAL);
+    this->gameStart(this->board->blindBoardStatus());
+
+
     qDebug()
             //<< "Discard: " << b->discard.size()     << "\n"
-             << "South: "   << board->south->hand.size() << "\n"
-             << "East: "    << board->east->hand.size()  << "\n"
-             << "North: "   << board->north->hand.size() << "\n"
-             << "West: "    << board->west->hand.size()  << "\n";
+             << "South: "   << board->encodeCardList(south->hand) << "\n"
+             << "East: "    << board->encodeCardList(east->hand) << "\n"
+             << "North: "   << board->encodeCardList(north->hand) << "\n"
+             << "West: "    << board->encodeCardList(west->hand) << "\n"
+             << "blind board status" << this->board->blindBoardStatus() << "\n"
+                ;
+
+
 }
 
 void Server::newClient()
@@ -275,6 +284,7 @@ void Server::on_switchNW_clicked()
 
     this->playerWest = pn;
     this->playerNorth = pw;
+    this->updateHandshake();
 }
 
 void Server::on_switchEN_clicked()
@@ -290,6 +300,7 @@ void Server::on_switchEN_clicked()
 
     this->playerEast = pn;
     this->playerNorth = pe;
+    this->updateHandshake();
 }
 
 void Server::on_switchSE_clicked()
@@ -305,6 +316,7 @@ void Server::on_switchSE_clicked()
 
     playerEast = ps;
     playerSouth = pe;
+    this->updateHandshake();
 }
 
 void Server::on_switchWS_clicked()
@@ -320,4 +332,5 @@ void Server::on_switchWS_clicked()
 
     playerSouth = pw;
     playerWest = ps;
+    this->updateHandshake();
 }
