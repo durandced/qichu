@@ -71,12 +71,34 @@ QJsonObject Server::chat(QTcpSocket *socket, QJsonObject chat)
 QJsonObject Server::announce(QJsonObject announce, Player *player)
 {
     if (!announce.contains(JSON_announce))
+    { // no announce in packet
         announce.insert(JSON_error, JSON_error_field);
+    }
     else if ((announce.value(JSON_announce).toString() != JSON_none) &&
              (announce.value(JSON_announce).toString() != JSON_tichu) &&
              (announce.value(JSON_announce).toString() != JSON_grand_tichu) &&
              (announce.value(JSON_announce).toString() != JSON_artichette))
-        announce.insert(JSON_error, JSON_error_field);
+    { // unknown announce
+        announce.insert(JSON_error, JSON_announce_error);
+    }
+    else if ((player->announceName != JSON_none) && (player->announceName != ""))
+    { // aleady announce something
+        announce.insert(JSON_error, JSON_allready_announce_error);
+    }
+    else if ((player->hand.size() == MAX_DEAL) || (this->board->ingame.size() != 0))
+    { // player may announce something
+        announce.insert(JSON_error, JSON_allready_announce_error);
+        player->announceName = announce.value(JSON_announce).toString();
+        if (player->announceName == JSON_none)
+            player->announce = e_announce::no;
+        else if ((player->announceName == JSON_tichu) && (player->hand.size() == MAX_DEAL))
+            player->announce = e_announce::tichu;
+        else if ((player->announceName == JSON_grand_tichu) && (this->board->ingame.size() == (FINISH_DEAL*NB_PLAYER)))
+            player->announce = e_announce::grandTichu;
+        else if ((player->announceName == JSON_artichette) && (this->board->ingame.size() == MAX_CARDS))
+            player->announce = e_announce::artichette;
+
+    }
     announce.insert(JSON_player, player->getName());
     return this->announced(announce);
 }

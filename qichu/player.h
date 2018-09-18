@@ -20,6 +20,7 @@ public:
     ~Player();
 // Class Objects
     e_turn playerPosition;
+    QString playerPositionName;
     Player* pLeft;
     Player* pRight;
     Player* pFront;

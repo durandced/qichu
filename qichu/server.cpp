@@ -113,7 +113,11 @@ void Server::on_start_clicked()
              << "blind board status" << this->board->blindBoardStatus() << "\n"
                 ;
 
-
+    ui->switchSE->setEnabled(false);
+    ui->switchEN->setEnabled(false);
+    ui->switchNW->setEnabled(false);
+    ui->switchWS->setEnabled(false);
+    ui->start->setEnabled(false);
 }
 
 void Server::newClient()

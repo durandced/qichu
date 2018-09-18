@@ -2,6 +2,7 @@
 #define BOARD_H
 
 #include <vector>
+#include <map>
 #include <random>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -20,10 +21,21 @@ public:
     Player *south;
     Player *west;
 
+    Player *firstFinish;
+    Player *lastFinish;
+    int verticalTeamScore;
+    int horizontalTeamScore;
+    std::map<e_turn, Player *> playerPosition;
 
     e_turn turn;
     void nextTurn() {this->turn = (e_turn)(((int)(this->turn) + 1) % 4);}
     int dealCards(QList<Player*> players, int nbCard);
+    int ingamePlayerNumber();
+    int ingameTeamNumber();
+    bool isGameOver();
+    void countScore();
+
+    Player *currentPlayer() {this->playerPosition[this->turn];}
 
     std::vector<Card> ingame;
     std::vector<Card> last_hand;

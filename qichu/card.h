@@ -2,28 +2,29 @@
 #define CARD_H
 
 #define ONE "Mahjong" // attrape-couillon
-#define TWO "two"
+#define TWO "two" // for tea
 #define THREE "three"
 #define FOUR "four"
 #define FIVE "five"
 #define SIX "six"
 #define SEVEN "seven" // WHAT'S IN THE BOX
 #define EIGHT "eight"
-#define NINE "nine"
+#define NINE "nine" // inch nails
 #define TEN "ten"
 #define JACK "jack" // She's got it
-#define QUEEN "queen"
+#define QUEEN "queen" // play the game ! I want it all
 #define KING "king"
 #define ACE "ace" // OF SPADES, THE ACE OF SPADES **air guitar**
 #define MAHJONG "mahjong"
-#define DOG "dog"
+#define DOG "dog" // who let it out! WHO- WHO- WHOWHO
 #define PHOENIX "phoenix"
-#define DRAGON "dragon"
+#define DRAGON "dragon" // imagine
 
 #define MAX_CARDS 56
 #define NB_PLAYER 4
 #define START_DEAL 8
 #define FINISH_DEAL 6
+#define MAX_DEAL (START_DEAL+FINISH_DEAL)
 
 
 enum e_card

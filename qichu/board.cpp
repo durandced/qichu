@@ -12,10 +12,23 @@ int randomize_me_a_card(int max)
 Board::Board(Player *n, Player *e, Player *s, Player *w)
     : north(n), east(e), south(s), west(w)
 {
+    this->firstFinish = NULL;
+    this->lastFinish = NULL;
+
     n->playerPosition = e_turn::north;
     e->playerPosition = e_turn::east;
     s->playerPosition = e_turn::south;
     w->playerPosition = e_turn::west;
+
+    this->playerPosition[e_turn::north] = n;
+    this->playerPosition[e_turn::east] = e;
+    this->playerPosition[e_turn::south] = s;
+    this->playerPosition[e_turn::west] = w;
+
+    n->playerPositionName = JSON_p_north;
+    e->playerPositionName = JSON_p_east;
+    s->playerPositionName = JSON_p_south;
+    w->playerPositionName = JSON_p_west;
 
     n->pLeft = e;
     e->pLeft = s;
@@ -83,7 +96,6 @@ int Board::dealCards(QList<Player*> players, int nbCard)
     return deal;
 }
 
-
 QJsonArray Board::encodeCardList(std::vector<Card> cards)
 {
     QJsonArray jsonCards;
@@ -129,7 +141,6 @@ QJsonObject Board::playerBoardStatus(Player* p)
     return blind;
 }
 
-
 QJsonObject Board::blindBoardStatus()
 {
     QJsonObject blindBoardState;
@@ -166,4 +177,76 @@ QJsonObject Board::blindBoardStatus()
     blindBoardState.insert(this->west->getName(), pWest );
 
     return blindBoardState;
+}
+
+int Board::ingamePlayerNumber()
+{
+    int nb = 0;
+
+    Player *p = this->north;
+
+    for (int loop = 0; loop < NB_PLAYER; loop++)
+    {
+        if (p->hand.size())
+            nb++;
+        else if (this->firstFinish == NULL)
+            this->firstFinish = p;
+        p = p->pLeft;
+    }
+
+    if ((this->lastFinish == NULL) && (nb == 1))
+        for (int loop = 0; loop < NB_PLAYER; loop++)
+        {
+            if (p->hand.size())
+                this->lastFinish = p;
+            p = p->pLeft;
+        }
+
+    return nb;
+}
+
+int Board::ingameTeamNumber()
+{
+    int nb = 0;
+    if ((this->north->hand.size()) || (this->south->hand.size()))
+        nb++;
+    if ((this->east->hand.size()) ||(this->west->hand.size()))
+        nb++;
+
+    return nb;
+}
+
+void Board::countScore()
+{
+    if (!this->isGameOver())
+        return;
+    if (this->ingameTeamNumber() == 1)
+    { // if capo
+        this->verticalTeamScore = (this->north->hand.size())?(0):(200);
+        this->horizontalTeamScore = (this->west->hand.size())?(0):(200);
+    }
+    else
+    { // if last standing man
+        while (this->lastFinish->hand.size())
+        {
+            this->lastFinish->pLeft->won.push_back(this->lastFinish->hand.back());
+            this->lastFinish->hand.pop_back();
+        }
+        while (this->lastFinish->won.size())
+        {
+            this->firstFinish->won.push_back(this->lastFinish->won.back());
+            this->lastFinish->won.pop_back();
+        }
+    // // TODO finish this...
+    // loop the 4 players and count
+    }
+
+    // loop the 4 players and check announces modifiers with this->firstFinish
+
+
+}
+
+bool Board::isGameOver()
+{
+    return ((this->ingamePlayerNumber() == 1) || (this->ingameTeamNumber() == 1));
 }

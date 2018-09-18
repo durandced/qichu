@@ -85,12 +85,12 @@ private:
     void updateHandshake();
     QJsonObject chatUpdate(QJsonObject chat);
     QJsonObject gameStart(QJsonObject o);
-    QJsonObject playerTurn(QJsonObject o);
+    QJsonObject playerTurn(e_turn turn);
     QJsonObject announced(QJsonObject announce);
     QJsonObject exchanged(QJsonObject o);
     QJsonObject cardPlayed(QJsonObject o);
     QJsonObject checked(QJsonObject check);
-    QJsonObject turnFinished(QJsonObject o);
+    QJsonObject turnFinished();
     QJsonObject endGame(QJsonObject o);
     QJsonObject sendError(QJsonObject o);
 

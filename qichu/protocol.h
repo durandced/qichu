@@ -41,6 +41,7 @@
 #define JSON_grand_tichu    "grand tichu"
 #define JSON_artichette     "artichette"       // non fede
 #define JSON_announce_error "invalide announce"
+#define JSON_allready_announce_error "allready announce"
 #define JSON_announce_fail  "rage announce"
 
 // JSON_exchange

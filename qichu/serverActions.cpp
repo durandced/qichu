@@ -53,20 +53,45 @@ QJsonObject Server::gameStart(QJsonObject o)
 
     qDebug()
             //<< "Discard: " << b->discard.size()     << "\n"
-             << "South: "   << n << "\n"
-             << "East: "    << e << "\n"
-             << "North: "   << s << "\n"
-             << "West: "    << w << "\n"
-             << "blind board status" << this->board->blindBoardStatus() << "\n"
-                ;
+            << "South: "   << n << "\n"
+            << "East: "    << e << "\n"
+            << "North: "   << s << "\n"
+            << "West: "    << w << "\n"
+            << "blind board status" << this->board->blindBoardStatus() << "\n"
+               ;
+
+    if (this->board->ingame.size() == 0)
+    {// all cards are dealt, game can begin
+        // search first player to play
+        for (Card c : this->playerNorth->hand)
+            if (c.value == e_card::mahjong)
+                this->board->turn = e_turn::north;
+        for (Card c : this->playerEast->hand)
+            if (c.value == e_card::mahjong)
+                this->board->turn = e_turn::east;
+        for (Card c : this->playerSouth->hand)
+            if (c.value == e_card::mahjong)
+                this->board->turn = e_turn::south;
+        for (Card c : this->playerWest->hand)
+            if (c.value == e_card::mahjong)
+                this->board->turn = e_turn::west;
+        this->playerTurn(this->board->turn);
+    }
+
 
     return (o);
 }
 
-QJsonObject Server::playerTurn(QJsonObject o)
+QJsonObject Server::playerTurn(e_turn turn)
 {
-    this->broadCast(o);
-    return (o);
+    QJsonObject playerTurn;
+
+    playerTurn.insert(JSON_command, JSON_end_turn);
+    playerTurn.insert(JSON_player_turn, this->board->playerPosition[turn]->playerPositionName);
+    playerTurn.insert(JSON_player, this->board->playerPosition[turn]->getName());
+
+    this->broadCast(playerTurn);
+    return (playerTurn);
 }
 
 QJsonObject Server::announced(QJsonObject announce)
@@ -80,65 +105,30 @@ QJsonObject Server::announced(QJsonObject announce)
     e_announce a;
     bool isValide = false;
 
-    if (req == JSON_none)
-    {
-        a = e_announce::no;
-        if (p->announceName.isEmpty() || (p->announceName == JSON_none))
-        {
-            p->announceName = req;
-            p->announce = a;
-            isValide = true;
-        }
-        else
-        {
-            isValide = false;
-        }
 
-    }
-    else if (req == JSON_tichu)
-    {
-        a = e_announce::tichu;
-    }
-    else if (req == JSON_grand_tichu)
-    {
-        a = e_announce::grandTichu;
-    }
-    else if (req == JSON_artichette)
-    {
-        a = e_announce::artichette;
-    }
-
-    if (!isValide)
-    {
-        announce.insert(JSON_error, JSON_announce_error);
-        this->broadCast(announce);
-        return (announce);
-    }
-    else
-    {
-        announce.insert(this->playerNorth->getName(),
-                        (this->playerNorth->announceName.isEmpty())?(JSON_unknown):(this->playerNorth->announceName));
-        announce.insert(this->playerEast->getName(),
-                        (this->playerEast->announceName.isEmpty())?(JSON_unknown):(this->playerEast->announceName));
-        announce.insert(this->playerSouth->getName(),
-                        (this->playerSouth->announceName.isEmpty())?(JSON_unknown):(this->playerSouth->announceName));
-        announce.insert(this->playerWest->getName(),
-                        (this->playerWest->announceName.isEmpty())?(JSON_unknown):(this->playerWest->announceName));
-        this->broadCast(announce);
-    }
+    announce.insert(this->playerNorth->getName(),
+                    (this->playerNorth->announceName.isEmpty())?(JSON_unknown):(this->playerNorth->announceName));
+    announce.insert(this->playerEast->getName(),
+                    (this->playerEast->announceName.isEmpty())?(JSON_unknown):(this->playerEast->announceName));
+    announce.insert(this->playerSouth->getName(),
+                    (this->playerSouth->announceName.isEmpty())?(JSON_unknown):(this->playerSouth->announceName));
+    announce.insert(this->playerWest->getName(),
+                    (this->playerWest->announceName.isEmpty())?(JSON_unknown):(this->playerWest->announceName));
 
     if (this->board->ingame.size() == (FINISH_DEAL*NB_PLAYER))
     { // waiting dealing last cards
         if (this->playerNorth->announceName.isEmpty() ||
-            this->playerEast->announceName.isEmpty()  ||
-            this->playerSouth->announceName.isEmpty() ||
-            this->playerWest->announceName.isEmpty())
+                this->playerEast->announceName.isEmpty()  ||
+                this->playerSouth->announceName.isEmpty() ||
+                this->playerWest->announceName.isEmpty())
         { // waiting for another player announces
         }
         else
         { // every player want its cards
             // deal 6 cards
             this->board->dealCards(this->playerSockets.values(), FINISH_DEAL);
+
+            // start game for test... but missing exchange parts
             this->gameStart(this->board->blindBoardStatus());
         }
     }
@@ -155,11 +145,13 @@ QJsonObject Server::announced(QJsonObject announce)
 
 
 
+    this->broadCast(announce);
     return (announce);
 }
 
 QJsonObject Server::exchanged(QJsonObject o)
 {
+
     this->broadCast(o);
     return (o);
 }
@@ -167,6 +159,7 @@ QJsonObject Server::exchanged(QJsonObject o)
 QJsonObject Server::cardPlayed(QJsonObject o)
 {
     this->broadCast(o);
+    this->turnFinished();
     return (o);
 }
 
@@ -178,14 +171,52 @@ QJsonObject Server::checked(QJsonObject check)
     return (check);
 }
 
-QJsonObject Server::turnFinished(QJsonObject o)
+QJsonObject Server::turnFinished()
 {
-    this->broadCast(o);
-    return (o);
+    QJsonObject playerTurn;
+
+    playerTurn.insert(JSON_command, JSON_end_turn);
+    playerTurn.insert(JSON_player_turn, this->board->currentPlayer()->playerPositionName);
+    playerTurn.insert(JSON_player, this->board->currentPlayer()->getName());
+
+    this->broadCast(playerTurn);
+
+    if (!this->board->isGameOver())
+    {
+        this->playerTurn(this->board->turn);
+        if (this->board->last_hand[0].value == dog)
+            this->board->nextTurn();
+
+        while (currentPlayer()->hand.size() == 0)
+            this->board->nextTurn();
+        this->playerTurn(this->board->turn);
+    }
+    else
+        this->endGame(playerTurn);
+
+    return (playerTurn);
 }
 
 QJsonObject Server::endGame(QJsonObject o)
 {
+    int verticalTeamScore;
+    int horizontalTeamScore;
+    if (this->board->ingameTeamNumber() == 1)
+    {
+        verticalTeamScore = (this->playerNorth->hand.size())?(0):(200);
+        horizontalTeamScore = (this->playerWest->hand.size())?(0):(200);
+    }
+    else
+    {
+        Player *p = this->playerNorth;
+
+        for (int loop = 0; loop < NB_PLAYER; loop++)
+        {
+            if ()
+                ;
+            p = p->pLeft;
+        }
+    }
     this->broadCast(o);
     return (o);
 }
