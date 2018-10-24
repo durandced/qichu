@@ -339,7 +339,7 @@ void test()
     Player *south = new Player();
     Player *west = new Player();
 
-    Board *b = new Board(north, east, south, west);
+    Board *b = new Board(north, east, south, west, 500);
     qDebug() << "Discard: " << b->ingame.size() << "\n"
              << "South: " << b->south->hand.size() << "\n"
              << "East: " << b->east->hand.size() << "\n    "

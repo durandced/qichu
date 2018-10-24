@@ -24,6 +24,8 @@ Client::Client(QWidget *parent, QString host, int port, QString name, QString se
     connect(this->socket, &QTcpSocket::readyRead,    this, &Client::readyRead);
     connect(this->socket, &QTcpSocket::bytesWritten, this, &Client::bytesWritten);
 
+    this->player = new Player(this, this->playerName, this->socket);
+
     // TODO try to bind host to detect bad host names
     this->socket->connectToHost(host, port);
 }

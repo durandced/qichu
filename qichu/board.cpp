@@ -9,12 +9,16 @@ int randomize_me_a_card(int max)
     return distr(eng);
 }
 
-Board::Board(Player *n, Player *e, Player *s, Player *w)
-    : north(n), east(e), south(s), west(w)
+Board::Board(Player *cli) // board instance for client side
+    :client(cli)
 {
-    this->firstFinish = NULL;
-    this->lastFinish = NULL;
+    this->resetBoard();
+}
 
+// board instance for server side
+Board::Board(Player *n, Player *e, Player *s, Player *w, int max)
+    : north(n), east(e), south(s), west(w), maxScore(max)
+{
     n->playerPosition = e_turn::north;
     e->playerPosition = e_turn::east;
     s->playerPosition = e_turn::south;
@@ -45,6 +49,37 @@ Board::Board(Player *n, Player *e, Player *s, Player *w)
     s->pFront = n;
     w->pFront = e;
 
+    this->resetBoard();
+}
+
+
+void Board::resetBoard()
+{
+    this->resetGame();
+    this->verticalTeamScore = 0;
+    this->horizontalTeamScore = 0;
+}
+
+void Board::resetGame()
+{
+    this->ingame.clear();
+    this->last_hand.clear();
+    this->discard.clear();
+    this->firstFinish = NULL;
+    this->lastFinish = NULL;
+
+    Player *p = this->north;
+    // loop the 4 players and check announces modifiers with this->firstFinish
+    for (int loop = 0; loop < NB_PLAYER; loop++)
+    {
+        p->announce = e_announce::unknown;
+        p->announceName = "";
+        p->hand.clear();
+        p->upper_hand.clear();
+        p->won.clear();
+        p = p->pLeft;
+    }
+
     for (int i = two; i <= ace ; i++)
     {
         for (int j = blue; j <= black; j++)
@@ -60,7 +95,7 @@ Board::Board(Player *n, Player *e, Player *s, Player *w)
             else
                 c.points = 0;
             ingame.push_back(c);
-        };
+        }
     }
     for (int k = mahjong; k <= dragon; k++)
     {
@@ -75,7 +110,7 @@ Board::Board(Player *n, Player *e, Player *s, Player *w)
         else
             c.points = 0;
         ingame.push_back(c);
-    };
+    }
 }
 
 int Board::dealCards(QList<Player*> players, int nbCard)
@@ -94,6 +129,11 @@ int Board::dealCards(QList<Player*> players, int nbCard)
         }
     }
     return deal;
+}
+
+void Board::setExchange()
+{
+
 }
 
 QJsonArray Board::encodeCardList(std::vector<Card> cards)
@@ -150,9 +190,9 @@ QJsonObject Board::blindBoardStatus()
     QJsonObject pSouth;
     QJsonObject pWest ;
 
-    blindBoardState.insert(JSON_discard, this->encodeCardList(this->discard));
-    blindBoardState.insert(JSON_deal_size, (int)this->ingame.size());
-    blindBoardState.insert(JSON_last_played, this->encodeCardList(this->last_hand));
+    boardState.insert(JSON_discard, this->encodeCardList(this->discard));
+    boardState.insert(JSON_deal_size, (int)this->ingame.size());
+    boardState.insert(JSON_last_played, this->encodeCardList(this->last_hand));
 
     pNorth.insert(JSON_hand, (int)this->north->hand.size());
     pNorth.insert(JSON_won , (int)this->north->won.size());
@@ -216,14 +256,14 @@ int Board::ingameTeamNumber()
     return nb;
 }
 
-void Board::countScore()
+bool Board::countScore()
 {
     if (!this->isGameOver())
-        return;
+        return false;
     if (this->ingameTeamNumber() == 1)
     { // if capo
-        this->verticalTeamScore = (this->north->hand.size())?(0):(200);
-        this->horizontalTeamScore = (this->west->hand.size())?(0):(200);
+        this->verticalTeamPoint = (this->north->hand.size())?(0):(200);
+        this->horizontalTeamPoint = (this->west->hand.size())?(0):(200);
     }
     else
     { // if last standing man
@@ -237,13 +277,37 @@ void Board::countScore()
             this->firstFinish->won.push_back(this->lastFinish->won.back());
             this->lastFinish->won.pop_back();
         }
-    // // TODO finish this...
-    // loop the 4 players and count
+
+        this->verticalTeamPoint = this->north->count_points() + this->south->count_points();
+        this->horizontalTeamPoint = this->east->count_points() + this->west->count_points();
     }
 
+    Player *p = this->north;
+    int bonus;
     // loop the 4 players and check announces modifiers with this->firstFinish
+    for (int loop = 0; loop < NB_PLAYER; loop++)
+    {
+        if (p->announce == e_announce::unknown)
+        {
+            this->verticalTeamPoint = 0;
+            this->horizontalTeamPoint = 0;
+            return false;
+        }
+        bonus = (int)(p->announce) * ((p == this->firstFinish)?(1):(-1));
+        if ((loop % NB_TEAM) == 0)
+            this->verticalTeamPoint += bonus;
+        else if ((loop % NB_TEAM) == 1)
+            this->horizontalTeamPoint += bonus ;
+//        else if ((loop % NB_TEAM) == 2) // for 6 players tichu
+//            this->horizontalTeamScore += bonus ;
+        p = p->pLeft;
+    }
+
+    this->verticalTeamScore += this->verticalTeamPoint;
+    this->horizontalTeamScore += this->verticalTeamPoint;
 
 
+    return true;
 }
 
 bool Board::isGameOver()

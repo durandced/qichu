@@ -38,7 +38,7 @@ signals:
 // ////////////////////////////////////////////
 private slots:
     void disconnected();
-    void bytesWritten(qint64 bytes);
+    void bytesWritten(qint64);
     void readyRead();
 private:
     int                        serverPort;
@@ -73,6 +73,8 @@ private slots:    // ui methodes
 private:          // basic protocol commands
     QJsonObject handShake(QTcpSocket *socket, QJsonObject handShake);
     QJsonObject chat(QTcpSocket *socket, QJsonObject chat);
+    QJsonObject sendError(QJsonObject o);
+    QJsonObject chatUpdate(QJsonObject chat);
 
 private:          // game server commands
     QJsonObject announce(QJsonObject announce, Player *player);
@@ -80,19 +82,18 @@ private:          // game server commands
     QJsonObject playCards(QJsonObject cards, Player *player);
     QJsonObject check(QJsonObject check, Player *player);
     QJsonObject commandError(QJsonObject cmd, Player *player);
+    QJsonObject appendAndSendCompleteBoardStatus(QJsonObject command);
 
-private:
+private:          // game rules reaction (clients callback and server actions)
     void updateHandshake();
-    QJsonObject chatUpdate(QJsonObject chat);
-    QJsonObject gameStart(QJsonObject o);
+    QJsonObject gameStart();
     QJsonObject playerTurn(e_turn turn);
     QJsonObject announced(QJsonObject announce);
     QJsonObject exchanged(QJsonObject o);
     QJsonObject cardPlayed(QJsonObject o);
     QJsonObject checked(QJsonObject check);
     QJsonObject turnFinished();
-    QJsonObject endGame(QJsonObject o);
-    QJsonObject sendError(QJsonObject o);
+    QJsonObject endGame();
 
 protected:
     void closeEvent(QCloseEvent * e);

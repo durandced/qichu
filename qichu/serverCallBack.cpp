@@ -105,12 +105,76 @@ QJsonObject Server::announce(QJsonObject announce, Player *player)
 
 QJsonObject Server::exchange(QJsonObject exchange, Player *player)
 {
+    if (exchange.contains(JSON_give_friend) &&
+        exchange.contains(JSON_give_right) &&
+        exchange.contains(JSON_give_left) )
+    {
+// ------------------------------------------------------------------------
+        std::vector<Card> right;
+        if (exchange.value(JSON_give_right).toString() == JSON_none)
+            player->right.state = unused;
+        else if (exchange.value(JSON_give_right).isArray())
+        {
+            right = this->board->decodeCardList(exchange.value(JSON_give_right).toArray());
+            if (right.size() == 1)
+            {
+                player->right = right.at(0);
+                player->right.state = used;
+            }
+            else
+                exchange.insert(JSON_error, JSON_exchange_error);
+        }
+        else
+            exchange.insert(JSON_error, JSON_exchange_error);
 
+// ------------------------------------------------------------------------
+        std::vector<Card> left;
+        if (exchange.value(JSON_give_left).toString() == JSON_none)
+            player->left.state = unused;
+        else if (exchange.value(JSON_give_left).isArray())
+        {
+            left = this->board->decodeCardList(exchange.value(JSON_give_left).toArray());
+            if (left.size() == 1)
+            {
+                player->left = left.at(0);
+                player->left.state = used;
+            }
+            else
+                exchange.insert(JSON_error, JSON_exchange_error);
+        }
+        else
+            exchange.insert(JSON_error, JSON_exchange_error);
+
+// ------------------------------------------------------------------------
+        std::vector<Card> front;
+        if (exchange.value(JSON_give_friend).toString() == JSON_none)
+            player->front.state = unused;
+        else if (exchange.value(JSON_give_friend).isArray())
+        {
+            front = this->board->decodeCardList(exchange.value(JSON_give_friend).toArray());
+            if (front.size() == 1)
+            {
+                player->front = front.at(0);
+                player->front.state = used;
+            }
+            else
+                exchange.insert(JSON_error, JSON_exchange_error);
+        }
+        else
+            exchange.insert(JSON_error, JSON_exchange_error);
+
+    }
+    else
+        exchange.insert(JSON_error, JSON_exchange_error);
+
+    return this->exchanged(exchange);
 }
 
 QJsonObject Server::playCards(QJsonObject cards, Player *player)
 {
-
+ // check card presence in player hand
+    cards.insert(JSON_player, player->getName());
+ //
 }
 
 QJsonObject Server::check(QJsonObject check, Player *player)

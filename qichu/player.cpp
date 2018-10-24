@@ -9,6 +9,9 @@ Player::Player(QWidget *parent, QString n, QTcpSocket *s) :
     this->announceName = "";
     this->lead = false;
     this->announce = e_announce::unknown;
+    this->left.state = unused;
+    this->front.state = unused;
+    this->right.state = unused;
 }
 
 Player::Player()

@@ -13,6 +13,7 @@ class Player;
 class Player : public QWidget
 {
     Q_OBJECT
+    friend class Board;
 
 public:
     explicit Player(QWidget *parent, QString n, QTcpSocket *s);
@@ -38,6 +39,7 @@ public:
     QString getName() {return this->name;}
     QString announceName;
     e_announce announce;
+
 private:
     QTcpSocket *socket;
     QString name;

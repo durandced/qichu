@@ -65,6 +65,21 @@ void Client::exchange()
     QJsonObject o;
     o.insert(JSON_command, JSON_exchange);
     // some stuff
+    std::vector<Card> front = {this->player->front};
+    std::vector<Card> right = {this->player->right};
+    std::vector<Card> left = {this->player->left};
+
+    o.insert(JSON_give_friend, JSON_none);
+    o.insert(JSON_give_right, JSON_none);
+    o.insert(JSON_give_left, JSON_none);
+
+    if (this->player->front.state != unused)
+        o.insert(JSON_give_friend, Board::encodeCardList(front));
+    if (this->player->right.state != unused)
+        o.insert(JSON_give_friend, Board::encodeCardList(right));
+    if (this->player->left.state != unused)
+        o.insert(JSON_give_friend, Board::encodeCardList(left));
+
     exchange.setObject(o);
 #ifdef _DEBUG
     ui->log->append("send:");

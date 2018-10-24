@@ -11,6 +11,7 @@
 
 #include "player.h"
 #include "protocol.h"
+#include "board.h"
 
 namespace Ui {
 class Client;
@@ -41,6 +42,7 @@ private:
     QString         serverHost;
     int             serverPort;
     QString         serverPassword;
+    Player*         player;
 private slots:
     void connected(); // handshake
     void disconnected();
@@ -55,7 +57,6 @@ private:
 private slots: // basics
     void on_sendChat_clicked();
     void on_sendAnnounce_clicked();
-
     void on_sendCheck_clicked();
 
 private: // player actions

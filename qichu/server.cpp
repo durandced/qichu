@@ -32,7 +32,6 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
 
 }
 
-
 void Server::closeEvent(QCloseEvent * e)
 {
     emit closed();
@@ -65,31 +64,6 @@ void Server::broadCast(QJsonObject message)
             p->getSocket()->write(output.toJson());
 }
 
-//void Server::playerTeamSelect(int teamNum)
-//{
-//    QSpinBox *sel = (QSpinBox*)(QObject::sender());
-//    int playerNum = sel->property("player").toInt();
-//    ui->start->setEnabled(false);
-
-//    if (playerNum < this->players.size())
-//        this->teams[this->players.at(playerNum)] = teamNum;
-
-//    int t1 = 0;
-//    int t2 = 0;
-//    if (this->teams.size() == 4)
-//    {
-//        foreach (int t, this->teams)
-//        {
-//            if (t == 1)
-//                t1++;
-//            if (t == 2)
-//                t2++;
-//        }
-//    }
-//    if (t1 == 2 && t2 == 2)
-//        ui->start->setEnabled(true);
-//}
-
 void Server::on_start_clicked()
 {
     Player *north = this->playerNorth;
@@ -97,12 +71,11 @@ void Server::on_start_clicked()
     Player *south = this->playerSouth;
     Player *west = this->playerWest;
 
-    this->board = new Board(north, east, south, west);
+    if (this->board == NULL)
+        this->board = new Board(north, east, south, west, 1000);
 
     // deal 8 cards and wait players announces
-    this->board->dealCards(this->playerSockets.values(), START_DEAL);
-    this->gameStart(this->board->blindBoardStatus());
-
+    this->gameStart();
 
     qDebug()
             //<< "Discard: " << b->discard.size()     << "\n"
@@ -230,7 +203,7 @@ void Server::disconnected()
     }
 }
 
-void Server::bytesWritten(qint64 bytes)
+void Server::bytesWritten(qint64 )
 {
 
 }

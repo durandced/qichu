@@ -22,10 +22,10 @@
 
 #define MAX_CARDS 56
 #define NB_PLAYER 4
+#define NB_TEAM 2
 #define START_DEAL 8
 #define FINISH_DEAL 6
 #define MAX_DEAL (START_DEAL+FINISH_DEAL)
-
 
 enum e_card
 {

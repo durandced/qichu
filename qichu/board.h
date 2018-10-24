@@ -15,27 +15,41 @@
 class Board
 {
 public:
-    Board(Player *n, Player *e, Player *s, Player *w);
+    Board(Player *n, Player *e, Player *s, Player *w, int max = 1000);
+    Board(Player *cli);
     Player *north;
     Player *east;
     Player *south;
     Player *west;
+    int maxScore;
+
+    Player *client;
 
     Player *firstFinish;
     Player *lastFinish;
+    Player *leader;
+
     int verticalTeamScore;
     int horizontalTeamScore;
+    int verticalTeamPoint;
+    int horizontalTeamPoint;
     std::map<e_turn, Player *> playerPosition;
 
     e_turn turn;
-    void nextTurn() {this->turn = (e_turn)(((int)(this->turn) + 1) % 4);}
     int dealCards(QList<Player*> players, int nbCard);
+    void setExchange();
+
+    void nextTurn() {this->turn = (e_turn)(((int)(this->turn) + 1) % 4);}
     int ingamePlayerNumber();
     int ingameTeamNumber();
-    bool isGameOver();
-    void countScore();
 
-    Player *currentPlayer() {this->playerPosition[this->turn];}
+    bool isGameOver();
+    bool isBoardOver();
+    bool countScore();
+    void resetGame();
+    void resetBoard();
+
+    Player *currentPlayer() { return this->playerPosition[this->turn]; }
 
     std::vector<Card> ingame;
     std::vector<Card> last_hand;
@@ -46,8 +60,8 @@ public:
     // ////////////////////////////////////////////
     QJsonObject blindBoardStatus();
     QJsonObject playerBoardStatus(Player* p);
-    QJsonArray encodeCardList(std::vector<Card> cards);
-    std::vector<Card> decodeCardList(QJsonArray cards);
+    static QJsonArray encodeCardList(std::vector<Card> cards);
+    static std::vector<Card> decodeCardList(QJsonArray cards);
 
 };
 

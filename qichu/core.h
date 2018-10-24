@@ -12,11 +12,11 @@ enum e_turn {
 };
 
 enum e_announce {
-    unknown = 0,
-    no,
-    tichu,
-    grandTichu,
-    artichette,
+    unknown = -1,
+    no = 0,
+    tichu = 100,
+    grandTichu = 200,
+    artichette = 400,
 };
 
 enum e_combi {
