@@ -43,12 +43,12 @@ QJsonObject Server::handShake(QTcpSocket *socket, QJsonObject handShake)
 
     QJsonDocument output;
     output.setObject(handShake);
-//    this->broadCast(handShake);
+    this->broadCast(handShake);
     socket->write(output.toJson());
     this->updateHandshake();
 #ifdef _DEBUG
-    ui->log->append("send:");
-    ui->log->append(output.toJson());
+    //ui->log->append("send:");
+    //ui->log->append(output.toJson());
 #endif
     return handShake;
 }
@@ -62,7 +62,7 @@ QJsonObject Server::chat(QTcpSocket *socket, QJsonObject chat)
     }
     QString text;
     text = this->playerSockets[socket]->getName() + " : " + chat.value(JSON_text).toString();
-    ui->log->append(text);
+    //ui->log->append(text);
     chat.insert(JSON_text, text);
 
     return this->chatUpdate(chat);
@@ -71,33 +71,73 @@ QJsonObject Server::chat(QTcpSocket *socket, QJsonObject chat)
 QJsonObject Server::announce(QJsonObject announce, Player *player)
 {
     if (!announce.contains(JSON_announce))
-    { // no announce in packet
+    { // if no announce in packet
         announce.insert(JSON_error, JSON_error_field);
+        announce.insert(JSON_player, player->getName());
+        return this->announced(announce);
     }
-    else if ((announce.value(JSON_announce).toString() != JSON_none) &&
-             (announce.value(JSON_announce).toString() != JSON_tichu) &&
-             (announce.value(JSON_announce).toString() != JSON_grand_tichu) &&
-             (announce.value(JSON_announce).toString() != JSON_artichette))
+
+    QString announceName = announce.value(JSON_announce).toString();
+    // checking annonce name
+    if ((announceName != JSON_none) &&
+        (announceName != JSON_tichu) &&
+        (announceName != JSON_grand_tichu) &&
+        (announceName != JSON_artichette))
     { // unknown announce
         announce.insert(JSON_error, JSON_announce_error);
+        announce.insert(JSON_player, player->getName());
+        return this->announced(announce);
     }
-    else if ((player->announceName != JSON_none) && (player->announceName != ""))
-    { // aleady announce something
-        announce.insert(JSON_error, JSON_allready_announce_error);
-    }
-    else if ((player->hand.size() == MAX_DEAL) || (this->board->ingame.size() != 0))
-    { // player may announce something
-        announce.insert(JSON_error, JSON_allready_announce_error);
-        player->announceName = announce.value(JSON_announce).toString();
-        if (player->announceName == JSON_none)
-            player->announce = e_announce::no;
-        else if ((player->announceName == JSON_tichu) && (player->hand.size() == MAX_DEAL))
-            player->announce = e_announce::tichu;
-        else if ((player->announceName == JSON_grand_tichu) && (this->board->ingame.size() == (FINISH_DEAL*NB_PLAYER)))
-            player->announce = e_announce::grandTichu;
-        else if ((player->announceName == JSON_artichette) && (this->board->ingame.size() == MAX_CARDS))
-            player->announce = e_announce::artichette;
 
+    e_announce playerAnnounce = e_announce::unknown;
+
+    if (announceName == JSON_none)
+        playerAnnounce = e_announce::no;
+    if (announceName == JSON_tichu)
+        playerAnnounce = e_announce::tichu;
+    if (announceName == JSON_grand_tichu)
+        playerAnnounce = e_announce::grandTichu;
+    if (announceName == JSON_artichette)
+        playerAnnounce = e_announce::artichette;
+
+    switch (this->game_stage)
+    {
+    case e_startStage::gameNotStarted:
+    case e_startStage::firstStageAnnounce:
+        // if game not started - player can say anything dumb
+        // ARTICHETTE can only be a blind announce... 'cuz its for the ballzy one
+        player->announce = playerAnnounce;
+        player->announceName = announceName;
+        break;
+    case e_startStage::dealFirstStage:
+    case e_startStage::secondStageAnnounce:
+        // if game started and first stage deal is done
+        if (playerAnnounce == e_announce::artichette)
+        { // cannot accept artichette anymore, and cant go back
+            announce.insert(JSON_error, JSON_announce_error);
+            announce.insert(JSON_player, player->getName());
+            return this->announced(announce);
+        }
+        player->announce = playerAnnounce;
+        player->announceName = announceName;
+        break;
+    case e_startStage::dealSecondStage:
+    case e_startStage::exchangeStage:
+    case e_startStage::gameStarted:
+        // if game started and first stage deal is done
+        if ((playerAnnounce == e_announce::artichette) ||
+                (playerAnnounce == e_announce::grandTichu) ||
+                (playerAnnounce == e_announce::no))
+        { // cannot accept artichette anymore, cant go back, and no gd tichu
+            announce.insert(JSON_error, JSON_announce_error);
+            announce.insert(JSON_player, player->getName());
+            return this->announced(announce);
+        }
+        player->announce = playerAnnounce;
+        player->announceName = announceName;
+        break;
+    default:
+        break;
     }
     announce.insert(JSON_player, player->getName());
     return this->announced(announce);
@@ -179,6 +219,13 @@ QJsonObject Server::playCards(QJsonObject cards, Player *player)
 
 QJsonObject Server::check(QJsonObject check, Player *player)
 {
+    // first game stages
+    if (this->game_stage < e_startStage::gameStarted)
+    {
+        player->announce = e_announce::no;
+        player->announceName = JSON_none;
+    }
+
     check.insert(JSON_player, player->getName());
     return this->checked(check);
 }

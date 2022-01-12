@@ -6,84 +6,112 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>529</width>
-    <height>441</height>
+    <width>570</width>
+    <height>768</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>200</y>
-     <width>258</width>
-     <height>224</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QTextEdit" name="log"/>
-    </item>
-    <item>
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QLineEdit" name="chat"/>
-      </item>
-      <item>
-       <widget class="QPushButton" name="sendChat">
-        <property name="text">
-         <string>send</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </item>
-   </layout>
-  </widget>
-  <widget class="QPushButton" name="sendCheck">
-   <property name="geometry">
-    <rect>
-     <x>430</x>
-     <y>370</y>
-     <width>80</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>check!</string>
-   </property>
-  </widget>
-  <widget class="QWidget" name="">
-   <property name="geometry">
-    <rect>
-     <x>300</x>
-     <y>400</y>
-     <width>213</width>
-     <height>24</height>
-    </rect>
-   </property>
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
-     <widget class="QLabel" name="labelAnnounce">
-      <property name="text">
-       <string>announce</string>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QComboBox" name="announceSelect"/>
-    </item>
-    <item>
-     <widget class="QPushButton" name="sendAnnounce">
-      <property name="text">
-       <string>announce!</string>
-      </property>
-     </widget>
-    </item>
-   </layout>
-  </widget>
+  <layout class="QVBoxLayout" name="verticalLayout_2">
+   <item>
+    <layout class="QGridLayout" name="gridLayout">
+     <item row="3" column="1">
+      <widget class="QPushButton" name="play">
+       <property name="text">
+        <string>play</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="0">
+      <widget class="QLabel" name="labelPlay">
+       <property name="text">
+        <string>play upper hand</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="1">
+      <widget class="QComboBox" name="hand"/>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labelHand">
+       <property name="text">
+        <string>hand</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="0">
+      <widget class="QLabel" name="labelUpperHand">
+       <property name="text">
+        <string>upper hand</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="2">
+      <widget class="QPushButton" name="sendAnnounce">
+       <property name="text">
+        <string>announce!</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="2">
+      <widget class="QPushButton" name="lowerCard">
+       <property name="text">
+        <string>lower card</string>
+       </property>
+      </widget>
+     </item>
+     <item row="2" column="1">
+      <widget class="QComboBox" name="upperHand"/>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labelAnnounce">
+       <property name="text">
+        <string>announce</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QComboBox" name="announceSelect"/>
+     </item>
+     <item row="1" column="2">
+      <widget class="QPushButton" name="upSelectedCard">
+       <property name="text">
+        <string>up card</string>
+       </property>
+      </widget>
+     </item>
+     <item row="3" column="2">
+      <widget class="QPushButton" name="sendCheck">
+       <property name="text">
+        <string>check!</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="verticalLayout">
+     <item>
+      <widget class="QTextEdit" name="log"/>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QLineEdit" name="chat"/>
+       </item>
+       <item>
+        <widget class="QPushButton" name="sendChat">
+         <property name="text">
+          <string>send</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+    </layout>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

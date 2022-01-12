@@ -15,6 +15,12 @@ Board::Board(Player *cli) // board instance for client side
     this->resetBoard();
 }
 
+Board::~Board()
+{
+    qDebug() << "deleting Board";
+}
+
+
 // board instance for server side
 Board::Board(Player *n, Player *e, Player *s, Player *w, int max)
     : north(n), east(e), south(s), west(w), maxScore(max)

@@ -17,6 +17,8 @@ class Board
 public:
     Board(Player *n, Player *e, Player *s, Player *w, int max = 1000);
     Board(Player *cli);
+    ~Board();
+public:
     Player *north;
     Player *east;
     Player *south;

@@ -9,7 +9,6 @@ MainWindow::MainWindow(QWidget *parent) :
     QString name = qgetenv("USER");
     if (name.isEmpty())
         name = qgetenv("USERNAME");
-    qDebug() << name;
     ui->name->setText(name);
 }
 
@@ -21,32 +20,38 @@ MainWindow::~MainWindow()
 void MainWindow::on_create_clicked()
 {
 
-    Server server(this, ui->port->value(), ui->pass->text());
-    //    this->hide();
-//    server.setModal(true); //exec();
-    server.show();
-    ui->ip->setText("localhost");
-    this->on_join_clicked();
-    //    this->show();
+    //Server *server = new Server(this, ui->port->value(), ui->pass->text());
+    //server->show();
+    Server s(this, ui->port->value(), ui->pass->text());
+    s.exec();
+
+    //server.setModal(true); //exec();
+    //this->on_join_clicked();
+    //this->show();
     // delete this->server;
     // this->server = NULL;
 }
 
 void MainWindow::on_join_clicked()
 {
-    QEventLoop loop;
-    Client client(this, ui->ip->text(), ui->port->value(), ui->name->text(), ui->pass->text());
-    Client bob(this, ui->ip->text(), ui->port->value(), "bob", ui->pass->text());
-    Client timy(this, ui->ip->text(), ui->port->value(), "timy", ui->pass->text());
-    Client rob(this, ui->ip->text(), ui->port->value(), "rob", ui->pass->text());
+    //QEventLoop *loop = new QEventLoop;
 
-    connect(&client, &Client::closed, &loop, &QEventLoop::quit);
-//    this->hide();
-    client.show();
-    bob.show();
-    timy.show();
-    rob.show();
-    loop.exec();
-//    this->show();
+    //ClientUi *client = new ClientUi(this, ui->ip->text(), ui->port->value(), ui->name->text(), ui->pass->text());
+    //client->show();
+    ClientUi c(this, ui->ip->text(), ui->port->value(), ui->name->text(), ui->pass->text());
+    c.exec();
+
+    //ClientUi *bob = new ClientUi(this, ui->ip->text(), ui->port->value(), "bob", ui->pass->text());
+    //ClientUi *timy = new ClientUi(this, ui->ip->text(), ui->port->value(), "timy", ui->pass->text());
+    //ClientUi *rob = new ClientUi(this, ui->ip->text(), ui->port->value(), "rob", ui->pass->text());
+
+    //connect(client, &Client::closed, loop, &QEventLoop::quit);
+    //this->hide();
+    //client->show();
+    //bob->show();
+    //timy->show();
+    //rob->show();
+    //loop->exec();
+    //this->show();
 
 }

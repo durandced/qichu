@@ -1,7 +1,7 @@
-#include "client.h"
+#include "clientui.h"
 #include "ui_client.h"
 
-void Client::sendHandshake()
+void ClientUi::sendHandshake()
 {
     QJsonDocument handShake;
     QJsonObject o;
@@ -17,7 +17,7 @@ void Client::sendHandshake()
     this->socket->write(handShake.toJson());
 }
 
-void Client::sendChat()
+void ClientUi::sendChat()
 {
     if (ui->chat->text().isEmpty())
         return;
@@ -35,7 +35,7 @@ void Client::sendChat()
     ui->chat->setFocus();
 }
 
-void Client::annonce(QString announce)
+void ClientUi::annonce(QString announce)
 {
     QJsonDocument output;
     QJsonObject o;
@@ -59,27 +59,41 @@ void Client::annonce(QString announce)
     this->socket->write(output.toJson());
 }
 
-void Client::exchange()
+void ClientUi::exchange()
+{
+//    QJsonDocument exchange;
+//    QJsonObject o;
+//    o.insert(JSON_command, JSON_exchange);
+//    // some stuff
+//    std::vector<Card> front = {this->player->front}; especialy this! is shit
+//    std::vector<Card> right = {this->player->right};
+//    std::vector<Card> left = {this->player->left};
+//
+//    o.insert(JSON_give_friend, JSON_none);
+//    o.insert(JSON_give_right, JSON_none);
+//    o.insert(JSON_give_left, JSON_none);
+//
+//    if (this->player->front.state != unused)
+//        o.insert(JSON_give_friend, Board::encodeCardList(front));
+//    if (this->player->right.state != unused)
+//        o.insert(JSON_give_friend, Board::encodeCardList(right));
+//    if (this->player->left.state != unused)
+//        o.insert(JSON_give_friend, Board::encodeCardList(left));
+//
+//    exchange.setObject(o);
+//#ifdef _DEBUG
+//    ui->log->append("send:");
+//    ui->log->append(exchange.toJson());
+//#endif
+//    this->socket->write(exchange.toJson());
+}
+
+void ClientUi::playCards()
 {
     QJsonDocument exchange;
     QJsonObject o;
     o.insert(JSON_command, JSON_exchange);
     // some stuff
-    std::vector<Card> front = {this->player->front};
-    std::vector<Card> right = {this->player->right};
-    std::vector<Card> left = {this->player->left};
-
-    o.insert(JSON_give_friend, JSON_none);
-    o.insert(JSON_give_right, JSON_none);
-    o.insert(JSON_give_left, JSON_none);
-
-    if (this->player->front.state != unused)
-        o.insert(JSON_give_friend, Board::encodeCardList(front));
-    if (this->player->right.state != unused)
-        o.insert(JSON_give_friend, Board::encodeCardList(right));
-    if (this->player->left.state != unused)
-        o.insert(JSON_give_friend, Board::encodeCardList(left));
-
     exchange.setObject(o);
 #ifdef _DEBUG
     ui->log->append("send:");
@@ -88,21 +102,7 @@ void Client::exchange()
     this->socket->write(exchange.toJson());
 }
 
-void Client::playCards()
-{
-    QJsonDocument exchange;
-    QJsonObject o;
-    o.insert(JSON_command, JSON_exchange);
-    // some stuff
-    exchange.setObject(o);
-#ifdef _DEBUG
-    ui->log->append("send:");
-    ui->log->append(exchange.toJson());
-#endif
-    this->socket->write(exchange.toJson());
-}
-
-void Client::check()
+void ClientUi::check()
 {
     QJsonDocument check;
     QJsonObject o;

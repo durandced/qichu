@@ -312,9 +312,9 @@ s_combi test_legit_pair_phoenix()
 
 void test_combis()
 {
-    s_combi ret;
-    ret.value = none;
-    ret.type = none;
+    //s_combi ret;
+    //ret.value = none;
+    //ret.type = none;
 
 /*    ret = test_legit_pair();
     ret = test_fake_pair();
@@ -327,9 +327,9 @@ void test_combis()
     ret = test_legit_pair7();
     ret = test_fake_pair7();
     ret = test_straight5();
-    ret = test_fake_straight5(); */
+    ret = test_fake_straight5();
     ret = test_full_house();
-    ret = test_fake_house();
+    ret = test_fake_house(); */
 }
 
 void test()

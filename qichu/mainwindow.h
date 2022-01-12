@@ -5,7 +5,7 @@
 #include <QEventLoop>
 
 #include "server.h"
-#include "client.h"
+#include "clientui.h"
 
 namespace Ui {
 class MainWindow;

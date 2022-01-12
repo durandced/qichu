@@ -41,28 +41,97 @@ QJsonObject Server::appendAndSendCompleteBoardStatus(QJsonObject command)
         we.insert(key, command.value(key));
     }
 
-    QJsonDocument output;
 
-    output.setObject(no);
-    this->playerNorth->getSocket()->write(output.toJson());
+    QJsonDocument outputNo;
+    outputNo.setObject(no);
+    int rno = this->playerNorth->getSocket()->write(outputNo.toJson(QJsonDocument::Compact));
 
-    output.setObject(ea);
-    this->playerEast->getSocket()->write(output.toJson());
+    QJsonDocument outputEa;
+    outputEa.setObject(ea);
+    int rea = this->playerEast->getSocket()->write(outputEa.toJson(QJsonDocument::Compact));
 
-    output.setObject(so);
-    this->playerSouth->getSocket()->write(output.toJson());
+    QJsonDocument outputSo;
+    outputSo.setObject(so);
+    int rso = this->playerSouth->getSocket()->write(outputSo.toJson(QJsonDocument::Compact));
 
-    output.setObject(we);
-    this->playerWest->getSocket()->write(output.toJson());
-    qDebug()
+    QJsonDocument outputWe;
+    outputWe.setObject(we);
+    int rwe = this->playerWest->getSocket()->write(outputWe.toJson(QJsonDocument::Compact));
+
+    QString d;
+    d.append("South: ").append(outputNo.toJson(QJsonDocument::Compact)).append("\n");
+    d.append("East: ").append(outputEa.toJson(QJsonDocument::Compact)).append("\n");
+    d.append("North: ").append(outputSo.toJson(QJsonDocument::Compact)).append("\n");
+    d.append("West: ").append(outputWe.toJson(QJsonDocument::Compact)).append("\n");
+    //d.append("blind board status").append(this->board->blindBoardStatus()).append("\n");
+    qDebug() << d;
             //<< "Discard: " << b->discard.size()     << "\n"
-            << "South: "   << no << "\n"
-            << "East: "    << ea << "\n"
-            << "North: "   << so << "\n"
-            << "West: "    << we << "\n"
-            << "blind board status" << this->board->blindBoardStatus() << "\n"
-               ;
+            //<< "South: " << rso << outputNo.toJson(QJsonDocument::Compact) << "\n"
+            //<< "East: "  << rea << outputEa.toJson(QJsonDocument::Compact) << "\n"
+            //<< "North: " << rno << outputSo.toJson(QJsonDocument::Compact) << "\n"
+            //<< "West: "  << rwe << outputWe.toJson(QJsonDocument::Compact) << "\n"
+            //<< "blind board status" << this->board->blindBoardStatus() << "\n"
+            //   ;
 
+}
+
+void Server::firstStageAnnounces()
+{
+    QJsonObject o;
+    o.insert(JSON_command, JSON_chat);
+    o.insert(JSON_text, "Did someone what to announce before dealing?");
+    this->game_stage = e_startStage::firstStageAnnounce;
+    foreach (Player* p, this->playerSockets)
+    {
+        p->announce = e_announce::unknown;
+        p->announceName = "";
+    }
+}
+
+void Server::dealFirstStage()
+{
+    QJsonObject boardStatus;
+    QJsonObject o;
+
+    o.insert(JSON_command, JSON_chat);
+    o.insert(JSON_text, "Dealing first cards...");
+    this->game_stage = e_startStage::dealFirstStage;
+    this->board->dealCards(this->playerSockets.values(), START_DEAL);
+    this->appendAndSendCompleteBoardStatus(boardStatus);
+    this->secondStageAnnounces();
+}
+
+void Server::secondStageAnnounces()
+{
+    this->game_stage = e_startStage::secondStageAnnounce;
+    foreach (Player* p, this->playerSockets)
+    {
+        if (p->announce == e_announce::no)
+        {
+            p->announce = e_announce::unknown;
+            p->announceName = "";
+        }
+    }
+
+}
+
+void Server::dealSecondStage()
+{
+    QJsonObject boardStatus;
+    QJsonObject o;
+
+    o.insert(JSON_command, JSON_chat);
+    o.insert(JSON_text, "Dealing first cards...");
+    this->game_stage = e_startStage::dealSecondStage;
+    this->board->dealCards(this->playerSockets.values(), FINISH_DEAL);
+    this->appendAndSendCompleteBoardStatus(boardStatus);
+    this->exchangeStage();
+}
+
+void Server::exchangeStage()
+{
+    this->game_stage = e_startStage::exchangeStage;
+    // set player turn
 }
 
 QJsonObject Server::gameStart()
@@ -70,14 +139,32 @@ QJsonObject Server::gameStart()
     QJsonObject obj;
 
     if (this->board->ingame.size() == 0)
-    {
-    }
-    else if (this->board->ingame.size() == (FINISH_DEAL*NB_PLAYER))
-    {
+    {// if first deal stage done
+        this->board->dealCards(this->playerSockets.values(), FINISH_DEAL);
+        obj.insert(JSON_command, JSON_game_start);
+        this->appendAndSendCompleteBoardStatus(obj);
+        if (this->playerEast->hasMahjong())
+            this->board->turn = e_turn::east;
+        if (this->playerNorth->hasMahjong())
+            this->board->turn = e_turn::north;
+        if (this->playerWest->hasMahjong())
+            this->board->turn = e_turn::west;
+        if (this->playerSouth->hasMahjong())
+            this->board->turn = e_turn::south;
     }
     else if (this->board->ingame.size() == ((START_DEAL+FINISH_DEAL)*NB_PLAYER))
-    {
-        this->board->dealCards(this->playerSockets.values(), START_DEAL);
+    {// if no dealet cards
+        if (this->playerEast->announce  == e_announce::unknown ||
+            this->playerNorth->announce == e_announce::unknown ||
+            this->playerWest->announce  == e_announce::unknown ||
+            this->playerSouth->announce == e_announce::unknown)
+        { // if one player did not annonce anything, do not deal
+
+        }
+        else
+        { // else deal first stage
+            this->board->dealCards(this->playerSockets.values(), START_DEAL);
+        }
         obj.insert(JSON_command, JSON_game_start);
         this->appendAndSendCompleteBoardStatus(obj);
         // now wait for players announces (even if none)
@@ -88,11 +175,9 @@ QJsonObject Server::gameStart()
 
 QJsonObject Server::announced(QJsonObject announce)
 {
-    if (announce.contains(JSON_error))
-        return (announce);
 
-    QString player = announce.value(JSON_player).toString();
-    QString req = announce.value(JSON_announce).toString();
+    //QString player = announce.value(JSON_player).toString();
+    //QString req = announce.value(JSON_announce).toString();
 
     announce.insert(this->playerNorth->getName(),
                     (this->playerNorth->announceName.isEmpty())?(JSON_unknown):(this->playerNorth->announceName));
@@ -102,35 +187,40 @@ QJsonObject Server::announced(QJsonObject announce)
                     (this->playerSouth->announceName.isEmpty())?(JSON_unknown):(this->playerSouth->announceName));
     announce.insert(this->playerWest->getName(),
                     (this->playerWest->announceName.isEmpty())?(JSON_unknown):(this->playerWest->announceName));
-
-    if (this->board->ingame.size() == (FINISH_DEAL*NB_PLAYER))
-    { // waiting dealing last cards
-        if (this->playerNorth->announceName.isEmpty() ||
-                this->playerEast->announceName.isEmpty()  ||
-                this->playerSouth->announceName.isEmpty() ||
-                this->playerWest->announceName.isEmpty())
-        { // waiting for another player announces
-        }
-        else
-        { // every player want its cards
-            // deal 6 cards
-            this->board->dealCards(this->playerSockets.values(), FINISH_DEAL);
-            this->exchanged(announce);
-            // start game for test... but missing exchange parts
-        }
-    }
-    else if (this->board->ingame.size() == ((FINISH_DEAL+START_DEAL)*NB_PLAYER))
-    { // nothing is deal
-
-    }
-    else
-    { // game is started
-
-    }
-
-
-
     this->broadCast(announce);
+
+    switch (this->game_stage)
+    {
+    case e_startStage::firstStageAnnounce:
+        foreach (Player* p, this->playerSockets.values())
+        {
+            if (p->announce == e_announce::unknown)
+            {
+                this->broadCast(announce);
+                return (announce);
+            }
+        }
+        this->dealFirstStage();
+        break;
+    case e_startStage::dealFirstStage:
+    case e_startStage::secondStageAnnounce:
+        foreach (Player* p, this->playerSockets.values())
+        {
+            if (p->announce == e_announce::unknown)
+            {
+                this->broadCast(announce);
+                return (announce);
+            }
+        }
+        this->dealSecondStage();
+        break;
+    case e_startStage::dealSecondStage:
+    case e_startStage::exchangeStage:
+    case e_startStage::gameStarted:
+        break;
+    default:
+        break;
+    }
     return (announce);
 }
 
@@ -256,12 +346,15 @@ QJsonObject Server::cardPlayed(QJsonObject o)
 
 QJsonObject Server::checked(QJsonObject check)
 {
-    bool isPlayerTurn = this->board->currentPlayer()->getName() == check.value(JSON_player).toString();
+    if (this->game_stage == e_startStage::gameStarted)
+    {
+        bool isPlayerTurn = this->board->currentPlayer()->getName() == check.value(JSON_player).toString();
+
+        if (isPlayerTurn && this->board->last_hand[0].value != e_card::dog)
+            this->turnFinished();
+    }
+
     this->broadCast(check);
-
-    if (isPlayerTurn && this->board->last_hand[0].value != e_card::dog)
-        this->turnFinished();
-
     return (check);
 }
 
@@ -297,7 +390,7 @@ QJsonObject Server::turnFinished()
 QJsonObject Server::endGame()
 {
     QJsonObject endGame;
-
+    this->game_stage = e_startStage::gameNotStarted;
     endGame.insert(JSON_command, JSON_end_game);
     endGame.insert(JSON_vertical_team, this->board->verticalTeamScore);
     endGame.insert(JSON_horizontal_team, this->board->horizontalTeamScore);

@@ -6,6 +6,7 @@ Player::Player(QWidget *parent, QString n, QTcpSocket *s) :
     ui(new Ui::Player)
 {
     ui->setupUi(this);
+    qDebug() << "creating Player" << n;
     this->announceName = "";
     this->lead = false;
     this->announce = e_announce::unknown;
@@ -21,7 +22,19 @@ Player::Player()
 
 Player::~Player()
 {
+    qDebug() << "deleting Player";
+
     delete ui;
+}
+
+bool Player::hasMahjong()
+{
+    for (auto &c : this->hand)
+    {
+        if (c.value == e_card::mahjong)
+            return true;
+    }
+    return false;
 }
 
 int Player::count_points()

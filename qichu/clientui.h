@@ -17,17 +17,17 @@ namespace Ui {
 class Client;
 }
 
-class Client : public QDialog
+class ClientUi : public QDialog
 {
     Q_OBJECT
 
 public:
-    explicit Client(QWidget *parent    = 0,
+    explicit ClientUi(QWidget *parent    = 0,
                     QString host       = "localhost",
                     int     port       = 2000,
                     QString name       = "toto",
                     QString serverPass = "");
-    ~Client();
+    ~ClientUi();
 signals:
     void closed();
 protected:
@@ -38,11 +38,11 @@ protected:
 // ////////////////////////////////////////////
 private:
     QTcpSocket      *socket;
-    QString         playerName;
-    QString         serverHost;
+    QString         playerName = "";
+    QString         serverHost = "";
     int             serverPort;
     QString         serverPassword;
-    Player*         player;
+    //Player*         player;
 private slots:
     void connected(); // handshake
     void disconnected();

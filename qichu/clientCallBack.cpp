@@ -1,20 +1,20 @@
-#include "client.h"
+#include "clientui.h"
 #include "ui_client.h"
 
-void Client::welcomed(QJsonObject o)
+void ClientUi::welcomed(QJsonObject o)
 {
     if (o.contains(JSON_handshake))
         ui->log->append(o.value(JSON_text).toString());
 
 }
 
-void Client::chatUpdate(QJsonObject o)
+void ClientUi::chatUpdate(QJsonObject o)
 {
     if (o.contains(JSON_text))
         ui->log->append(o.value(JSON_text).toString());
 }
 
-void Client::gameStart(QJsonObject o)
+void ClientUi::gameStart(QJsonObject )
 {
     // if hand.size == 8
     //   start exchange ui
@@ -24,13 +24,13 @@ void Client::gameStart(QJsonObject o)
     //   wait player turn
 }
 
-void Client::playerTurn(QJsonObject o)
+void ClientUi::playerTurn(QJsonObject )
 {
     // ui.showPlayerTurn player
 
 }
 
-void Client::announced(QJsonObject announce)
+void ClientUi::announced(QJsonObject announce)
 {
     if (announce.contains(JSON_error))
     {
@@ -45,19 +45,29 @@ void Client::announced(QJsonObject announce)
     }
 }
 
-void Client::exchanged(QJsonObject o)
+void ClientUi::exchanged(QJsonObject o)
 {
 
 
 }
 
-void Client::cardPlayed(QJsonObject o)
+void ClientUi::cardPlayed(QJsonObject o)
 {
-
+    if (o.contains(JSON_error))
+    {
+        if (o.value(JSON_error).toString() == JSON_play_error)
+            ui->log->append("player rage : playing " + o.value(JSON_visible).toString() + " fails");
+        // show player rage
+    }
+    else
+    {
+        ui->log->append("player play " + o.value(JSON_announce).toString());
+        // show player announce
+    }
 
 }
 
-void Client::checked(QJsonObject check)
+void ClientUi::checked(QJsonObject check)
 {
     QString player;
     if (check.contains(JSON_player))
@@ -68,19 +78,19 @@ void Client::checked(QJsonObject check)
     // ui show player check
 }
 
-void Client::turnFinished(QJsonObject o)
+void ClientUi::turnFinished(QJsonObject o)
 {
 
 
 }
 
-void Client::endGame(QJsonObject o)
+void ClientUi::endGame(QJsonObject o)
 {
 
 
 }
 
-void Client::error(QJsonObject o)
+void ClientUi::error(QJsonObject o)
 {
 
 

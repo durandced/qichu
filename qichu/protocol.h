@@ -58,6 +58,7 @@
 // JSON_play_cards
 #define JSON_visible                   "visible"
 #define JSON_upper_hand                "upper_hand"
+#define JSON_play_error                "play_error"
 
 // JSON_check
 

@@ -7,16 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>711</width>
-    <height>241</height>
+    <height>439</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout_2">
-   <item>
-    <widget class="QTextEdit" name="log"/>
-   </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
      <item>
@@ -104,6 +101,13 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
+        <widget class="QPushButton" name="start">
+         <property name="text">
+          <string>start</string>
+         </property>
+        </widget>
+       </item>
+       <item>
         <spacer name="horizontalSpacer">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
@@ -115,13 +119,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item>
-        <widget class="QPushButton" name="start">
-         <property name="text">
-          <string>start</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </item>

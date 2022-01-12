@@ -11,15 +11,10 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     ui->playerSouth->setText("waiting...");
     ui->playerWest->setText("waiting...");
 
-    ui->switchSE->setEnabled(false);
-    ui->switchEN->setEnabled(false);
-    ui->switchNW->setEnabled(false);
-    ui->switchWS->setEnabled(false);
-    ui->start->setEnabled(false);
-    this->board = NULL;
+    this->board = nullptr;
     this->tcpServer = new QTcpServer(this);
-    connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient);
-
+    connect(this->tcpServer, &QTcpServer::newConnection, this, &Server::newClient, Qt::QueuedConnection);
+    //connect(this, &Server::log, ui->log, &QTextEdit::append, Qt::QueuedConnection);
     // TODO check listen return
     this->tcpServer->listen(QHostAddress::Any, this->serverPort);
 
@@ -27,20 +22,25 @@ Server::Server(QWidget *parent, int port, QString serverPass) :
     foreach (QNetworkInterface i, QNetworkInterface::allInterfaces())
         if (i.humanReadableName().contains("local"))
             if (i.addressEntries().size() >= 2)
-                ui->log->append("Game server available at " + i.addressEntries().at(1).ip().toString()
-                                + " port " + QString::number(this->serverPort));
+//                ui->log->append("Game server available at " + i.addressEntries().at(1).ip().toString()
+//                                + " port " + QString::number(this->serverPort));
+                qDebug() << ("Game server available at " + i.addressEntries().at(1).ip().toString()
+                    + " port " + QString::number(this->serverPort));
 
 }
 
-void Server::closeEvent(QCloseEvent * e)
-{
-    emit closed();
-    QWidget::closeEvent(e);
-}
+//void Server::closeEvent(QCloseEvent * e)
+//{
+//    //emit closed();
+//    QWidget::closeEvent(e);
+//}
 
 Server::~Server()
 {
-    foreach (QTcpSocket *socket, this->playerSockets.keys())
+    qDebug() << "deleting Server";
+
+    auto sockets = this->playerSockets.keys();
+    foreach (QTcpSocket *socket, sockets)
     {
         if (socket->isOpen())
         {
@@ -61,7 +61,7 @@ void Server::broadCast(QJsonObject message)
     output.setObject(message);
 
     foreach (Player* p, this->playerSockets)
-            p->getSocket()->write(output.toJson());
+        p->getSocket()->write(output.toJson(QJsonDocument::Compact));
 }
 
 void Server::on_start_clicked()
@@ -73,9 +73,8 @@ void Server::on_start_clicked()
 
     if (this->board == NULL)
         this->board = new Board(north, east, south, west, 1000);
-
-    // deal 8 cards and wait players announces
-    this->gameStart();
+    else
+        return;
 
     qDebug()
             //<< "Discard: " << b->discard.size()     << "\n"
@@ -85,21 +84,23 @@ void Server::on_start_clicked()
              << "West: "    << board->encodeCardList(west->hand) << "\n"
              << "blind board status" << this->board->blindBoardStatus() << "\n"
                 ;
+    ui->switchSE->hide();//setEnabled(false);
+    ui->switchEN->hide();//setEnabled(false);
+    ui->switchNW->hide();//setEnabled(false);
+    ui->switchWS->hide();//setEnabled(false);
+    ui->start->hide();
 
-    ui->switchSE->setEnabled(false);
-    ui->switchEN->setEnabled(false);
-    ui->switchNW->setEnabled(false);
-    ui->switchWS->setEnabled(false);
-    ui->start->setEnabled(false);
+    // wait players announces
+    this->firstStageAnnounces();
 }
 
 void Server::newClient()
 {
     QTcpSocket *socket = this->tcpServer->nextPendingConnection();
 
-    connect(socket, &QTcpSocket::disconnected, this, &Server::disconnected);
-    connect(socket, &QTcpSocket::readyRead,    this, &Server::readyRead);
-    connect(socket, &QTcpSocket::bytesWritten, this, &Server::bytesWritten);
+    connect(socket, &QTcpSocket::disconnected, this, &Server::disconnected, Qt::QueuedConnection);
+    connect(socket, &QTcpSocket::readyRead,    this, &Server::readyRead, Qt::QueuedConnection);
+    connect(socket, &QTcpSocket::bytesWritten, this, &Server::bytesWritten, Qt::QueuedConnection);
 }
 
 bool Server::addPlayer(QString name, QTcpSocket* socket)
@@ -121,28 +122,29 @@ bool Server::addPlayer(QString name, QTcpSocket* socket)
     this->playerEast = NULL;
     this->playerSouth = NULL;
     this->playerWest = NULL;
-    if (this->players.keys().size() >= 1)
+    auto names = this->players.keys();
+    if (names.size() >= 1)
     {
-        ui->playerNorth->setText(this->players.keys()[0]);
-        this->playerNorth = this->playerSockets[this->players[this->players.keys()[0]]];
+        ui->playerNorth->setText(names[0]);
+        this->playerNorth = this->playerSockets[this->players[names[0]]];
     }
-    if (this->players.keys().size() >= 2)
+    if (names.size() >= 2)
     {
-        ui->playerEast->setText(this->players.keys()[1]);
-        this->playerEast = this->playerSockets[this->players[this->players.keys()[1]]];
+        ui->playerEast->setText(names[1]);
+        this->playerEast = this->playerSockets[this->players[names[1]]];
     }
-    if (this->players.keys().size() >= 3)
+    if (names.size() >= 3)
     {
-        ui->playerSouth->setText(this->players.keys()[2]);
-        this->playerSouth = this->playerSockets[this->players[this->players.keys()[2]]];
+        ui->playerSouth->setText(names[2]);
+        this->playerSouth = this->playerSockets[this->players[names[2]]];
     }
-    if (this->players.keys().size() >= 4)
+    if (names.size() >= 4)
     {
-        ui->playerWest->setText(this->players.keys()[3]);
-        this->playerWest = this->playerSockets[this->players[this->players.keys()[3]]];
+        ui->playerWest->setText(names[3]);
+        this->playerWest = this->playerSockets[this->players[names[3]]];
     }
 
-    if (this->players.keys().size() == 4)
+    if (names.size() == 4)
     {
         ui->switchSE->setEnabled(true);
         ui->switchEN->setEnabled(true);
@@ -167,7 +169,9 @@ bool Server::removePlayer(QString name)
     ui->playerSouth->setText("waiting...");
     ui->playerWest->setText("waiting...");
 
-    foreach (QString player, this->players.keys())
+    auto names = this->players.keys();
+
+    foreach (QString player, names)
         this->addPlayer(player, this->players[player]);
 
     ui->switchSE->setEnabled(false);
@@ -182,7 +186,7 @@ bool Server::removePlayer(QString name)
 void Server::disconnected()
 {
     QTcpSocket *socket = (QTcpSocket *)(QObject::sender());
-    ui->log->append("clien disconnected.");
+    //ui->log->append("clien disconnected.");
 
     disconnect(socket, &QTcpSocket::disconnected, this, &Server::disconnected);
     disconnect(socket, &QTcpSocket::readyRead,    this, &Server::readyRead);
@@ -191,7 +195,7 @@ void Server::disconnected()
     if (this->playerSockets.contains(socket))
     {
         QString name = this->playerSockets[socket]->getName();
-        ui->log->append(name);
+        //ui->log->append(name);
 
         this->removePlayer(name);
         delete this->playerSockets[socket];
@@ -210,11 +214,13 @@ void Server::bytesWritten(qint64 )
 
 void Server::readyRead()
 {
+    qDebug() << "receiving stuff";
     QTcpSocket *socket = (QTcpSocket *)(QObject::sender());
     QJsonDocument input = QJsonDocument::fromJson(socket->readAll());
+    qDebug() << "receiving :" << input.toJson();
 #ifdef _DEBUG
-    ui->log->append("receive:");
-    ui->log->append(input.toJson());
+    //ui->log->append("receive:");
+    //ui->log->append(input.toJson());
 #endif
     QJsonObject o = input.object();
     if (this->playerSockets.contains(socket))
@@ -240,11 +246,14 @@ void Server::readyRead()
         else
             o = this->commandError(o, NULL);
     }
+//#if 0
 #ifdef _DEBUG
     QJsonDocument output;
     output.setObject(o);
-    ui->log->append("callback output:");
-    ui->log->append(output.toJson());
+    //ui->log->append("callback output:");
+    //ui->log->append(output.toJson());
+    QString d = QString::fromStdString(output.toJson().toStdString());
+    qDebug() << "callback output :" << d;
 #endif
 }
 

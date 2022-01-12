@@ -32,7 +32,7 @@ public:
     ~Server();
 signals:
     void closed();
-
+    void log(QString s);
 // ////////////////////////////////////////////
 // client/server members
 // ////////////////////////////////////////////
@@ -42,7 +42,7 @@ private slots:
     void readyRead();
 private:
     int                        serverPort;
-    QTcpServer                 *tcpServer = NULL;
+    QTcpServer                 *tcpServer = nullptr;
 
 // ////////////////////////////////////////////
 // game members
@@ -52,6 +52,7 @@ private:          // players managment
     QMap<QString, QTcpSocket*> players;
     QMap<QTcpSocket*, Player*> playerSockets;
 
+    e_startStage game_stage = e_startStage::gameNotStarted;
     Board *board;
     Player* playerNorth;
     Player* playerEast;
@@ -86,6 +87,11 @@ private:          // game server commands
 
 private:          // game rules reaction (clients callback and server actions)
     void updateHandshake();
+    void firstStageAnnounces();
+    void dealFirstStage();
+    void secondStageAnnounces();
+    void dealSecondStage();
+    void exchangeStage();
     QJsonObject gameStart();
     QJsonObject playerTurn(e_turn turn);
     QJsonObject announced(QJsonObject announce);
@@ -96,7 +102,7 @@ private:          // game rules reaction (clients callback and server actions)
     QJsonObject endGame();
 
 protected:
-    void closeEvent(QCloseEvent * e);
+    //void closeEvent(QCloseEvent * e);
 
 private:
     Ui::Server *ui;

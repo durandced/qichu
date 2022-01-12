@@ -19,6 +19,16 @@ enum e_announce {
     artichette = 400,
 };
 
+enum e_startStage {
+    gameNotStarted,
+    firstStageAnnounce,
+    dealFirstStage,
+    secondStageAnnounce,
+    dealSecondStage,
+    exchangeStage,
+    gameStarted
+};
+
 enum e_combi {
     none = 0,
     card,           // Case 1

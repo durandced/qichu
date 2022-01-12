@@ -39,6 +39,7 @@ public:
     QString getName() {return this->name;}
     QString announceName;
     e_announce announce;
+    bool hasMahjong();
 
 private:
     QTcpSocket *socket;
